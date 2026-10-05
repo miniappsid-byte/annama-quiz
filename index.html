@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>AN-NAMA QUIZ - Live Quiz & Assessment Platform</title>
+
+  <!-- PWA & Mobile Meta Tags -->
+  <meta name="theme-color" content="#0d6efd">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="An-Nama' Quiz">
+  <meta name="description" content="Platform Live Quiz & Assessment Kartu QR Siswa SMPI An-Nama'">
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='25' fill='%230d6efd'/%3E%3Ctext x='50' y='68' font-size='60' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'%3E?%3C/text%3E%3C/svg%3E">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='25' fill='%230d6efd'/%3E%3Ctext x='50' y='68' font-size='60' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'%3E?%3C/text%3E%3C/svg%3E">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #0f172a;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    #loadingScreen {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: #0f172a;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      transition: opacity 0.4s ease;
+    }
+    .spinner {
+      width: 46px;
+      height: 46px;
+      border: 4px solid rgba(255, 255, 255, 0.15);
+      border-top-color: #38bdf8;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 1rem;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    #appFrame {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Layar Loading Halus Sebelum Web App Siap -->
+  <div id="loadingScreen">
+    <div class="spinner"></div>
+    <h3 style="font-weight: 700; letter-spacing: -0.5px; color: #f8fafc; margin-bottom: 4px;">AN-NAMA QUIZ</h3>
+    <p style="font-size: 0.85rem; color: #94a3b8;">Menghubungkan ke server aplikasi...</p>
+  </div>
+
+  <!-- Iframe Fullscreen yang Membuka Web App Google Apps Script -->
+  <iframe 
+    id="appFrame" 
+    src="https://script.google.com/macros/s/AKfycby540IzRE4lW0Tp_z6QejqZ6cJQHn9SvjEVilQQmdkZFKbElpWxpYehanEHWurcEpI/exec" 
+    allow="camera; microphone; fullscreen; clipboard-read; clipboard-write;"
+    onload="hideLoading()">
+  </iframe>
+
+  <script>
+    function hideLoading() {
+      const loader = document.getElementById('loadingScreen');
+      if (loader) {
+        loader.style.opacity = '0';
+        setTimeout(() => loader.style.display = 'none', 400);
+      }
+    }
+
+    // Registrasi Service Worker PWA
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('PWA Service Worker registered:', reg.scope))
+          .catch(err => console.log('Service Worker registration failed:', err));
+      });
+    }
+
+    // Fallback jika iframe lambat
+    setTimeout(hideLoading, 3000);
+  </script>
+</body>
+</html>

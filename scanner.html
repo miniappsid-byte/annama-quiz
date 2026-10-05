@@ -1,0 +1,364 @@
+<!-- Halaman Scanner HP Guru Khusus Mobile -->
+<div class="container py-3" style="max-width: 500px;">
+
+  <!-- Header Scanner -->
+  <div class="card border-0 shadow-sm rounded-4 p-3 mb-3 bg-white">
+    <div class="d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center gap-2">
+        <div class="p-2 bg-primary bg-opacity-10 text-primary rounded-3">
+          <i class="bi bi-camera-fill fs-5"></i>
+        </div>
+        <div>
+          <h6 class="fw-bold mb-0 text-dark">SCANNER HP GURU</h6>
+          <small class="text-muted" id="scannerSubStatus">Belum terhubung ke kuis</small>
+        </div>
+      </div>
+      <button class="btn btn-outline-secondary btn-sm rounded-pill px-3" onclick="routeByRole('GURU')">
+        <i class="bi bi-arrow-left"></i> Menu
+      </button>
+    </div>
+  </div>
+
+  <!-- Step 1: Input Kode Kuis Laptop (Jika belum konek) -->
+  <div id="scannerConnectCard" class="card border-0 shadow-sm rounded-4 p-4 text-center bg-white mb-3">
+    <div class="mb-3">
+      <i class="bi bi-display text-primary fs-1"></i>
+      <h5 class="fw-bold mt-2 mb-1">Hubungkan ke Layar Laptop</h5>
+      <p class="text-muted small">Masukkan 7 karakter kode kuis yang tertera di layar laptop guru (contoh: <code>ANM4827</code>)</p>
+    </div>
+    <div class="input-group input-group-lg mb-3">
+      <input type="text" class="form-control text-center font-monospace fw-bold text-uppercase" id="inputQuizCode" placeholder="ANM----" maxlength="7">
+      <button class="btn btn-primary fw-semibold px-4" onclick="connectQuizSession()">
+        Hubungkan
+      </button>
+    </div>
+    <small class="text-secondary">Pastikan live kuis di laptop sudah diklik "Mulai Live Quiz".</small>
+  </div>
+
+  <!-- Step 2: Layar Kamera Scanner HP (Setelah Terhubung) -->
+  <div id="scannerActiveCard" class="d-none">
+    
+    <!-- Info Kuis & Soal Aktif -->
+    <div class="card border-0 shadow-sm rounded-4 p-3 bg-primary text-white mb-3">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <small class="text-white-50 d-block" id="scanKuisMeta">Matematika - Kelas 8A</small>
+          <h6 class="fw-bold mb-0 text-white" id="scanKuisJudul">Kuis Aljabar</h6>
+        </div>
+        <div class="text-end">
+          <span class="badge bg-warning text-dark font-monospace fw-bold fs-6" id="scanKodeKuisBadge">ANM----</span>
+          <small class="d-block text-white-50 mt-1" id="scanSoalNomorBadge">Soal 1</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pilihan Orientasi Kartu (A, B, C, D) -->
+    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white mb-3">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <small class="text-muted fw-bold">ARAH ORIENTASI KARTU SANTRI:</small>
+        <span class="badge bg-light text-dark border" id="selectedAnswerBadge">Arah: A</span>
+      </div>
+      <div class="row g-2">
+        <div class="col-3">
+          <button type="button" class="btn btn-outline-danger w-100 py-2 fw-bold active rounded-3" id="btnOrientA" onclick="setOrientation('A')">
+            <span class="fs-5 d-block">A</span>
+            <small style="font-size: 0.65rem;">ATAS</small>
+          </button>
+        </div>
+        <div class="col-3">
+          <button type="button" class="btn btn-outline-primary w-100 py-2 fw-bold rounded-3" id="btnOrientB" onclick="setOrientation('B')">
+            <span class="fs-5 d-block">B</span>
+            <small style="font-size: 0.65rem;">KANAN</small>
+          </button>
+        </div>
+        <div class="col-3">
+          <button type="button" class="btn btn-outline-success w-100 py-2 fw-bold rounded-3" id="btnOrientC" onclick="setOrientation('C')">
+            <span class="fs-5 d-block">C</span>
+            <small style="font-size: 0.65rem;">BAWAH</small>
+          </button>
+        </div>
+        <div class="col-3">
+          <button type="button" class="btn btn-outline-warning text-dark w-100 py-2 fw-bold rounded-3" id="btnOrientD" onclick="setOrientation('D')">
+            <span class="fs-5 d-block">D</span>
+            <small style="font-size: 0.65rem;">KIRI</small>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Box Preview Kamera Video Langsung (HTML5 Video Element) -->
+    <div class="card border-0 shadow-sm rounded-4 p-2 bg-dark text-white mb-3 position-relative overflow-hidden" style="min-height: 280px;">
+      <video id="nativeVideo" autoplay playsinline muted style="width: 100%; height: 260px; object-fit: cover; border-radius: 12px; background: #000;"></video>
+      <canvas id="qrCanvas" style="display: none;"></canvas>
+      
+      <!-- Scan Target Reticle Frame -->
+      <div class="scan-reticle"></div>
+
+      <!-- Tombol Aktifkan Kamera Jika Terhalang -->
+      <div id="btnStartCamFallback" class="position-absolute top-50 start-50 translate-middle text-center d-none" style="z-index: 10;">
+        <button class="btn btn-light rounded-pill px-4 shadow fw-bold" onclick="startNativeCamera()">
+          <i class="bi bi-camera-fill me-1 text-primary"></i> Nyalakan Kamera
+        </button>
+      </div>
+    </div>
+
+    <!-- Panel Hasil Scan Terakhir -->
+    <div id="scanResultCard" class="card border-0 shadow-sm rounded-4 p-3 bg-white mb-3 d-none">
+      <div class="d-flex align-items-center gap-3">
+        <div class="p-3 bg-success bg-opacity-10 text-success rounded-circle fs-3" id="resultStatusIcon">
+          <i class="bi bi-check-circle-fill"></i>
+        </div>
+        <div class="flex-grow-1">
+          <small class="text-muted d-block" id="resultMeta">Siswa Berhasil Discan</small>
+          <h5 class="fw-bold mb-0 text-dark" id="resultNamaSiswa">Ahmad Fauzi</h5>
+          <div class="mt-1 d-flex gap-2">
+            <span class="badge bg-primary" id="resultJawaban">Jawaban: B</span>
+            <span class="badge bg-light text-dark border" id="resultDurasi">4.2 dtk</span>
+            <span class="badge bg-success" id="resultSkor">+135 Poin</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tombol Kontrol Bawah -->
+    <div class="d-grid gap-2">
+      <button class="btn btn-outline-secondary rounded-pill py-2" onclick="reconnectScanner()">
+        <i class="bi bi-arrow-repeat me-1"></i> Ganti Kode Kuis
+      </button>
+    </div>
+
+  </div>
+
+</div>
+
+<style>
+  .scan-reticle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200px;
+    height: 200px;
+    border: 3px solid rgba(59, 130, 246, 0.85);
+    border-radius: 16px;
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.35);
+    pointer-events: none;
+  }
+</style>
+
+<script>
+  let scannerState = {
+    activeCode: "",
+    sessionData: null,
+    currentOrientation: "A",
+    isScanningPaused: false,
+    questionStartTime: Date.now(),
+    videoStream: null,
+    animationFrameId: null
+  };
+
+  function initScannerView(presetCode = "") {
+    if (presetCode) {
+      document.getElementById("inputQuizCode").value = presetCode;
+      connectQuizSession();
+    }
+  }
+
+  function connectQuizSession() {
+    const code = document.getElementById("inputQuizCode").value.trim().toUpperCase();
+    if (!code) return showFloatingAlert("Masukkan kode kuis laptop terlebih dahulu!", "warning");
+
+    showLoading(true);
+    google.script.run
+      .withSuccessHandler(res => {
+        showLoading(false);
+        if (!res.success) {
+          return showFloatingAlert(res.message, "danger");
+        }
+
+        scannerState.activeCode = code;
+        scannerState.sessionData = res.data.session;
+        scannerState.questionStartTime = Date.now();
+
+        // Update UI
+        document.getElementById("scannerConnectCard").classList.add("d-none");
+        document.getElementById("scannerActiveCard").classList.remove("d-none");
+        document.getElementById("scannerSubStatus").textContent = `Terhubung (${code})`;
+        document.getElementById("scanKodeKuisBadge").textContent = code;
+        document.getElementById("scanKuisJudul").textContent = res.data.session.judul;
+        document.getElementById("scanKuisMeta").textContent = `${res.data.session.namaMapel} • ${res.data.session.namaKelas}`;
+        document.getElementById("scanSoalNomorBadge").textContent = `Soal ${(res.data.session.currentQuestionIndex || 0) + 1} / ${res.data.totalSoal}`;
+
+        startNativeCamera();
+      })
+      .withFailureHandler(err => {
+        showLoading(false);
+        showFloatingAlert(err.message, "danger");
+      })
+      .connectScannerSession(AppState.token, code);
+  }
+
+  function setOrientation(letter) {
+    scannerState.currentOrientation = letter;
+    ['A', 'B', 'C', 'D'].forEach(l => {
+      const btn = document.getElementById(`btnOrient${l}`);
+      if (l === letter) btn.classList.add("active");
+      else btn.classList.remove("active");
+    });
+    document.getElementById("selectedAnswerBadge").textContent = `Arah: ${letter}`;
+  }
+
+  // ================= NATIVE WEBRTC CAMERA STREAM =================
+  async function startNativeCamera() {
+    stopNativeCamera();
+    document.getElementById("btnStartCamFallback").classList.add("d-none");
+
+    const constraints = {
+      audio: false,
+      video: {
+        facingMode: { ideal: "environment" },
+        width: { ideal: 1280 },
+        height: { ideal: 720 }
+      }
+    };
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      scannerState.videoStream = stream;
+      const video = document.getElementById("nativeVideo");
+      video.srcObject = stream;
+      video.setAttribute("playsinline", true);
+      await video.play();
+
+      requestAnimationFrame(scanVideoFrame);
+    } catch (err) {
+      console.warn("Kamera environment gagal, coba default facingMode:", err);
+      try {
+        const fallbackStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        scannerState.videoStream = fallbackStream;
+        const video = document.getElementById("nativeVideo");
+        video.srcObject = fallbackStream;
+        video.setAttribute("playsinline", true);
+        await video.play();
+
+        requestAnimationFrame(scanVideoFrame);
+      } catch (finalErr) {
+        console.error("Gagal membuka kamera:", finalErr);
+        document.getElementById("btnStartCamFallback").classList.remove("d-none");
+        showFloatingAlert(
+          "Izin kamera belum aktif. Klik tombol 'Nyalakan Kamera' di tengah layar atau izinkan akses kamera di pengaturan browser HP.",
+          "warning",
+          "Aktivasi Kamera"
+        );
+      }
+    }
+  }
+
+  function stopNativeCamera() {
+    if (scannerState.animationFrameId) {
+      cancelAnimationFrame(scannerState.animationFrameId);
+      scannerState.animationFrameId = null;
+    }
+    if (scannerState.videoStream) {
+      scannerState.videoStream.getTracks().forEach(track => track.stop());
+      scannerState.videoStream = null;
+    }
+  }
+
+  // Loop decode frame menggunakan BarcodeDetector native jika didukung, atau fallback jsQR
+  async function scanVideoFrame() {
+    const video = document.getElementById("nativeVideo");
+    if (!video || video.readyState !== video.HAVE_ENOUGH_DATA) {
+      scannerState.animationFrameId = requestAnimationFrame(scanVideoFrame);
+      return;
+    }
+
+    if (!scannerState.isScanningPaused) {
+      // 1. Coba BarcodeDetector bawaan browser HP (sangat cepat & hemat baterai)
+      if ('BarcodeDetector' in window) {
+        try {
+          const barcodeDetector = new BarcodeDetector({ formats: ['qr_code'] });
+          const barcodes = await barcodeDetector.detect(video);
+          if (barcodes.length > 0) {
+            handleDecodedQr(barcodes[0].rawValue);
+          }
+        } catch (e) {}
+      } else if (typeof jsQR !== "undefined") {
+        // 2. Fallback jsQR via Canvas
+        const canvas = document.getElementById("qrCanvas");
+        const ctx = canvas.getContext("2d", { willReadFrequently: true });
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const code = jsQR(imageData.data, imageData.width, imageData.height, {
+          inversionAttempts: "dontInvert"
+        });
+        if (code && code.data) {
+          handleDecodedQr(code.data);
+        }
+      }
+    }
+
+    scannerState.animationFrameId = requestAnimationFrame(scanVideoFrame);
+  }
+
+  function handleDecodedQr(decodedText) {
+    if (scannerState.isScanningPaused) return;
+    scannerState.isScanningPaused = true;
+
+    const durationSeconds = Math.max(1, ((Date.now() - scannerState.questionStartTime) / 1000));
+
+    google.script.run
+      .withSuccessHandler(res => {
+        const resultCard = document.getElementById("scanResultCard");
+        resultCard.classList.remove("d-none");
+
+        if (res.success) {
+          document.getElementById("resultStatusIcon").innerHTML = '<i class="bi bi-check-circle-fill text-success"></i>';
+          document.getElementById("resultMeta").textContent = "✓ Jawaban Berhasil Dicatat";
+          document.getElementById("resultNamaSiswa").textContent = res.data.namaSiswa;
+          document.getElementById("resultJawaban").textContent = `Pilihan: ${res.data.jawaban}`;
+          document.getElementById("resultDurasi").textContent = `${res.data.durasi} dtk`;
+          document.getElementById("resultSkor").textContent = `+${res.data.skor} Poin`;
+          document.getElementById("resultSkor").className = res.data.isCorrect ? "badge bg-success" : "badge bg-danger";
+          
+          if (typeof SoundFX !== "undefined") SoundFX.scanSuccess();
+          if (navigator.vibrate) navigator.vibrate([80, 40, 80]);
+        } else {
+          document.getElementById("resultStatusIcon").innerHTML = '<i class="bi bi-exclamation-circle-fill text-warning"></i>';
+          document.getElementById("resultMeta").textContent = "Pemberitahuan Scan";
+          document.getElementById("resultNamaSiswa").textContent = res.message;
+          document.getElementById("resultJawaban").textContent = "-";
+          document.getElementById("resultDurasi").textContent = "-";
+          document.getElementById("resultSkor").textContent = "-";
+
+          if (typeof SoundFX !== "undefined") SoundFX.scanDuplicate();
+          if (navigator.vibrate) navigator.vibrate(200);
+        }
+
+        setTimeout(() => {
+          scannerState.isScanningPaused = false;
+        }, 1800);
+      })
+      .withFailureHandler(err => {
+        showFloatingAlert(err.message, "danger");
+        setTimeout(() => {
+          scannerState.isScanningPaused = false;
+        }, 1800);
+      })
+      .submitScanAnswer(
+        AppState.token,
+        scannerState.activeCode,
+        decodedText,
+        scannerState.currentOrientation,
+        durationSeconds
+      );
+  }
+
+  function reconnectScanner() {
+    stopNativeCamera();
+    document.getElementById("scannerActiveCard").classList.add("d-none");
+    document.getElementById("scannerConnectCard").classList.remove("d-none");
+  }
+</script>

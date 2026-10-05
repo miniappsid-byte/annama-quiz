@@ -1,0 +1,1263 @@
+<!-- Navbar Admin -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark px-3 py-2 shadow-sm sticky-top no-print">
+  <div class="container-fluid">
+    <span class="navbar-brand brand-title">
+      <i class="bi bi-patch-question-fill text-primary me-2"></i>AN-NAMA QUIZ
+    </span>
+    <div class="d-flex align-items-center gap-2">
+      <span class="badge bg-danger rounded-pill badge-role">ADMIN</span>
+      <span class="text-light small d-none d-md-inline" id="adminNavbarName">Administrator</span>
+      <button class="btn btn-outline-light btn-sm rounded-pill px-3 ms-2" onclick="logout()">
+        <i class="bi bi-box-arrow-right me-1"></i> Logout
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- Tab Navigasi Master Data -->
+<div class="bg-white border-bottom shadow-sm no-print">
+  <div class="container">
+    <ul class="nav nav-pills py-2 gap-2" id="adminTabs" role="tablist">
+      <li class="nav-item">
+        <button class="nav-link active rounded-pill px-3 py-1 small fw-semibold" onclick="switchAdminTab('overview')">
+          <i class="bi bi-speedometer2 me-1"></i> Ringkasan
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link rounded-pill px-3 py-1 small fw-semibold text-secondary" onclick="switchAdminTab('guru')">
+          <i class="bi bi-person-video3 me-1"></i> Data Guru
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link rounded-pill px-3 py-1 small fw-semibold text-secondary" onclick="switchAdminTab('siswa')">
+          <i class="bi bi-people-fill me-1"></i> Data Siswa
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link rounded-pill px-3 py-1 small fw-semibold text-secondary" onclick="switchAdminTab('cetak-qr')">
+          <i class="bi bi-qr-code-scan me-1"></i> Cetak Kartu QR
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link rounded-pill px-3 py-1 small fw-semibold text-secondary" onclick="switchAdminTab('kelas')">
+          <i class="bi bi-door-open me-1"></i> Kelas
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link rounded-pill px-3 py-1 small fw-semibold text-secondary" onclick="switchAdminTab('mapel')">
+          <i class="bi bi-journal-bookmark me-1"></i> Mapel
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link rounded-pill px-3 py-1 small fw-semibold text-secondary" onclick="switchAdminTab('tahun')">
+          <i class="bi bi-calendar3 me-1"></i> Tahun Pelajaran
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link rounded-pill px-3 py-1 small fw-semibold text-danger border border-danger border-opacity-25" onclick="switchAdminTab('rekap-hasil')">
+          <i class="bi bi-graph-up-arrow me-1"></i> Rekap Hasil & Analisis
+        </button>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<!-- Alert Notifikasi Admin -->
+<div class="container mt-3 no-print">
+  <div id="adminNotification" class="alert alert-success alert-dismissible fade d-none py-2 px-3 small" role="alert">
+    <span id="adminNotificationMsg"></span>
+  </div>
+</div>
+
+<!-- Konten Utama Admin -->
+<div class="container py-3">
+
+  <!-- ================= TAB 1: OVERVIEW ================= -->
+  <div id="tab-overview" class="admin-tab-pane">
+    <div class="card border-0 shadow-sm rounded-4 bg-primary text-white p-4 mb-4">
+      <h4 class="fw-bold mb-1" id="adminWelcome">Selamat Datang, Admin!</h4>
+      <p class="mb-0 text-white-50">Kelola master data pendidik, peserta didik, kelas, dan cetak kartu QR SMPI An-Nama'.</p>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="card border-0 shadow-sm rounded-3 p-3 text-center bg-white">
+          <small class="text-muted fw-semibold">Guru</small>
+          <h2 class="fw-bold text-primary my-1" id="statGuru">0</h2>
+          <small class="text-secondary">Terdaftar</small>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="card border-0 shadow-sm rounded-3 p-3 text-center bg-white">
+          <small class="text-muted fw-semibold">Siswa</small>
+          <h2 class="fw-bold text-success my-1" id="statSiswa">0</h2>
+          <small class="text-secondary">Santri</small>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="card border-0 shadow-sm rounded-3 p-3 text-center bg-white">
+          <small class="text-muted fw-semibold">Kelas</small>
+          <h2 class="fw-bold text-warning my-1" id="statKelas">0</h2>
+          <small class="text-secondary">Rombel</small>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-lg-3">
+        <div class="card border-0 shadow-sm rounded-3 p-3 text-center bg-white">
+          <small class="text-muted fw-semibold">Mata Pelajaran</small>
+          <h2 class="fw-bold text-info my-1" id="statMapel">0</h2>
+          <small class="text-secondary">Mapel Aktif</small>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-lg-3">
+        <div class="card border-0 shadow-sm rounded-3 p-3 text-center bg-white">
+          <small class="text-muted fw-semibold">Tahun Pelajaran</small>
+          <h2 class="fw-bold text-secondary my-1" id="statTahun">0</h2>
+          <small class="text-secondary">Tahun Ajaran</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= TAB 2: DATA GURU ================= -->
+  <div id="tab-guru" class="admin-tab-pane d-none">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-person-video3 text-primary me-2"></i>Data Guru</h5>
+      <button class="btn btn-primary btn-sm rounded-pill px-3" onclick="openModalGuru()">
+        <i class="bi bi-plus-lg me-1"></i> Tambah Guru
+      </button>
+    </div>
+    <div class="card border-0 shadow-sm rounded-3">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>ID Guru</th>
+              <th>Nama Lengkap</th>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Status</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyGuru"><tr><td colspan="6" class="text-center py-4 text-muted">Memuat data guru...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= TAB 3: DATA SISWA ================= -->
+  <div id="tab-siswa" class="admin-tab-pane d-none">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-people-fill text-success me-2"></i>Data Siswa (Santri)</h5>
+      <div class="d-flex gap-2">
+        <button class="btn btn-outline-success btn-sm rounded-pill px-3" onclick="switchAdminTab('cetak-qr')">
+          <i class="bi bi-printer me-1"></i> Cetak Kartu QR
+        </button>
+        <button class="btn btn-success btn-sm rounded-pill px-3" onclick="openModalSiswa()">
+          <i class="bi bi-plus-lg me-1"></i> Tambah Siswa
+        </button>
+      </div>
+    </div>
+    <div class="card border-0 shadow-sm rounded-3">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>ID Siswa</th>
+              <th>NIS</th>
+              <th>Nama Siswa</th>
+              <th>Kelas</th>
+              <th>Token QR (Anonim)</th>
+              <th>Status</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="tbodySiswa"><tr><td colspan="7" class="text-center py-4 text-muted">Memuat data siswa...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= TAB 4: CETAK KARTU QR SISWA (V1.2) ================= -->
+  <div id="tab-cetak-qr" class="admin-tab-pane d-none">
+    <div class="card border-0 shadow-sm rounded-4 p-3 mb-4 bg-white">
+      <div class="row g-3 align-items-center">
+        <div class="col-md-5">
+          <h5 class="fw-bold text-dark mb-1"><i class="bi bi-qr-code-scan text-primary me-2"></i>Generator & Cetak Kartu Siswa</h5>
+          <p class="text-muted small mb-0">Kartu pintar 4-Orientasi (A/B/C/D). Format cetak 4 kartu per lembar A4.</p>
+        </div>
+        <div class="col-md-4">
+          <div class="input-group">
+            <label class="input-group-text bg-light small fw-semibold"><i class="bi bi-funnel me-1"></i> Filter</label>
+            <select class="form-select" id="filterCetakKelas" onchange="loadKartuSiswa()">
+              <option value="">Semua Kelas</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-md-3 text-md-end">
+          <button class="btn btn-primary rounded-pill px-4 fw-semibold shadow-sm" onclick="cetakKartuSiswa()">
+            <i class="bi bi-printer-fill me-1"></i> Cetak A4
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Preview Kartu Grid -->
+    <div id="previewKartuContainer" class="row g-3 justify-content-center">
+      <div class="col-12 text-center py-5 text-muted">
+        <div class="spinner-border text-primary spinner-border-sm me-2"></div> Menyiapkan kartu siswa...
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= TAB 5: DATA KELAS ================= -->
+  <div id="tab-kelas" class="admin-tab-pane d-none">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-door-open text-warning me-2"></i>Data Kelas</h5>
+      <button class="btn btn-warning btn-sm text-dark rounded-pill px-3" onclick="openModalKelas()">
+        <i class="bi bi-plus-lg me-1"></i> Tambah Kelas
+      </button>
+    </div>
+    <div class="card border-0 shadow-sm rounded-3">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>ID Kelas</th>
+              <th>Nama Kelas</th>
+              <th>Tingkat</th>
+              <th>Tahun Pelajaran</th>
+              <th>Status</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyKelas"><tr><td colspan="6" class="text-center py-4 text-muted">Memuat data kelas...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= TAB 6: DATA MAPEL ================= -->
+  <div id="tab-mapel" class="admin-tab-pane d-none">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-journal-bookmark text-info me-2"></i>Mata Pelajaran</h5>
+      <button class="btn btn-info btn-sm text-white rounded-pill px-3" onclick="openModalMapel()">
+        <i class="bi bi-plus-lg me-1"></i> Tambah Mapel
+      </button>
+    </div>
+    <div class="card border-0 shadow-sm rounded-3">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>ID Mapel</th>
+              <th>Nama Mata Pelajaran</th>
+              <th>Status</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyMapel"><tr><td colspan="4" class="text-center py-4 text-muted">Memuat data mapel...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= TAB 7: DATA TAHUN ================= -->
+  <div id="tab-tahun" class="admin-tab-pane d-none">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-calendar3 text-secondary me-2"></i>Tahun Pelajaran</h5>
+      <button class="btn btn-secondary btn-sm rounded-pill px-3" onclick="openModalTahun()">
+        <i class="bi bi-plus-lg me-1"></i> Tambah Tahun
+      </button>
+    </div>
+    <div class="card border-0 shadow-sm rounded-3">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>ID Tahun</th>
+              <th>Tahun Pelajaran</th>
+              <th>Status</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyTahun"><tr><td colspan="4" class="text-center py-4 text-muted">Memuat data tahun...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  <!-- ================= TAB 8: REKAP HASIL & ANALISIS ADMIN (V1.9) ================= -->
+  <div id="tab-rekap-hasil" class="admin-tab-pane d-none">
+    <div class="card border-0 shadow-sm rounded-4 p-3 mb-3 bg-white">
+      <div class="row g-3 align-items-center">
+        <div class="col-md-4">
+          <h5 class="fw-bold text-dark mb-0"><i class="bi bi-graph-up-arrow text-danger me-2"></i>Rekap Hasil Seluruh Guru</h5>
+          <small class="text-muted">Pantau ketuntasan, nilai rata-rata, dan statistik kelas.</small>
+        </div>
+        <div class="col-md-6">
+          <div class="row g-2">
+            <div class="col-4">
+              <select class="form-select form-select-sm" id="adminFilterTahun" onchange="loadRekapAdmin()">
+                <option value="">Semua Tahun</option>
+              </select>
+            </div>
+            <div class="col-4">
+              <select class="form-select form-select-sm" id="adminFilterKelas" onchange="loadRekapAdmin()">
+                <option value="">Semua Kelas</option>
+              </select>
+            </div>
+            <div class="col-4">
+              <select class="form-select form-select-sm" id="adminFilterMapel" onchange="loadRekapAdmin()">
+                <option value="">Semua Mapel</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-2 text-md-end d-flex gap-2 justify-content-md-end">
+          <button class="btn btn-outline-success btn-sm rounded-pill px-3" onclick="exportRekapAdminCSV()">
+            <i class="bi bi-file-earmark-spreadsheet me-1"></i> CSV
+          </button>
+          <button class="btn btn-outline-secondary btn-sm rounded-pill px-3" onclick="loadRekapAdmin()">
+            <i class="bi bi-arrow-repeat me-1"></i> Refresh
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-3">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Judul Kuis</th>
+              <th>Guru Pengampu</th>
+              <th>Kelas</th>
+              <th>Mapel</th>
+              <th>Peserta</th>
+              <th>Rata-rata</th>
+              <th>Tertinggi</th>
+              <th>Terendah</th>
+              <th>% Ketuntasan</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyRekapAdmin">
+            <tr><td colspan="9" class="text-center py-4 text-muted">Memuat rekapitulasi hasil kuis...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ================= MODAL GURU ================= -->
+<div class="modal fade" id="modalGuru" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content border-0 rounded-4 shadow">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold" id="modalGuruTitle">Tambah Guru Baru</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form onsubmit="saveGuruForm(event)">
+        <div class="modal-body">
+          <input type="hidden" id="guruId">
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Nama Lengkap Guru & Gelar</label>
+            <input type="text" class="form-control" id="guruNama" placeholder="Contoh: Ust. Fatih, S.Pd." required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Username Login</label>
+            <input type="text" class="form-control" id="guruUsername" placeholder="Contoh: fatih" required>
+          </div>
+          <div class="mb-3" id="groupGuruPassword">
+            <label class="form-label small fw-semibold">Password Akun (Default: 123456)</label>
+            <input type="text" class="form-control" id="guruPassword" placeholder="123456">
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Email (Opsional)</label>
+            <input type="email" class="form-control" id="guruEmail" placeholder="guru@annama.sch.id">
+          </div>
+          <div class="mb-3" id="groupGuruStatus">
+            <label class="form-label small fw-semibold">Status</label>
+            <select class="form-select" id="guruStatus">
+              <option value="AKTIF">AKTIF</option>
+              <option value="NONAKTIF">NONAKTIF</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-light rounded-pill" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-primary rounded-pill px-4" id="btnSaveGuru">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ================= MODAL SISWA ================= -->
+<div class="modal fade" id="modalSiswa" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content border-0 rounded-4 shadow">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold" id="modalSiswaTitle">Tambah Siswa Baru</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form onsubmit="saveSiswaForm(event)">
+        <div class="modal-body">
+          <input type="hidden" id="siswaId">
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">NIS (Nomor Induk Siswa)</label>
+            <input type="text" class="form-control" id="siswaNis" placeholder="Contoh: 2026001">
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Nama Lengkap Siswa</label>
+            <input type="text" class="form-control" id="siswaNama" placeholder="Nama santri" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Kelas</label>
+            <select class="form-select" id="siswaKelas" required>
+              <option value="">Pilih Kelas</option>
+            </select>
+          </div>
+          <div class="mb-3" id="groupSiswaStatus">
+            <label class="form-label small fw-semibold">Status</label>
+            <select class="form-select" id="siswaStatus">
+              <option value="AKTIF">AKTIF</option>
+              <option value="NONAKTIF">NONAKTIF</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-light rounded-pill" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-success rounded-pill px-4" id="btnSaveSiswa">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ================= MODAL KELAS ================= -->
+<div class="modal fade" id="modalKelas" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content border-0 rounded-4 shadow">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold" id="modalKelasTitle">Tambah Kelas Baru</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form onsubmit="saveKelasForm(event)">
+        <div class="modal-body">
+          <input type="hidden" id="kelasId">
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Nama Kelas</label>
+            <input type="text" class="form-control" id="kelasNama" placeholder="Contoh: 7A - Abu Bakar" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Tingkat / Jenjang</label>
+            <input type="text" class="form-control" id="kelasTingkat" placeholder="Contoh: 7, 8, atau 9">
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Tahun Pelajaran</label>
+            <input type="text" class="form-control" id="kelasTahun" placeholder="Contoh: 2025/2026">
+          </div>
+          <div class="mb-3" id="groupKelasStatus">
+            <label class="form-label small fw-semibold">Status</label>
+            <select class="form-select" id="kelasStatus">
+              <option value="AKTIF">AKTIF</option>
+              <option value="NONAKTIF">NONAKTIF</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-light rounded-pill" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-warning rounded-pill px-4" id="btnSaveKelas">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ================= MODAL MAPEL ================= -->
+<div class="modal fade" id="modalMapel" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content border-0 rounded-4 shadow">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold" id="modalMapelTitle">Tambah Mata Pelajaran</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form onsubmit="saveMapelForm(event)">
+        <div class="modal-body">
+          <input type="hidden" id="mapelId">
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Nama Mata Pelajaran</label>
+            <input type="text" class="form-control" id="mapelNama" placeholder="Contoh: Bahasa Arab" required>
+          </div>
+          <div class="mb-3" id="groupMapelStatus">
+            <label class="form-label small fw-semibold">Status</label>
+            <select class="form-select" id="mapelStatus">
+              <option value="AKTIF">AKTIF</option>
+              <option value="NONAKTIF">NONAKTIF</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-light rounded-pill" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-info rounded-pill text-white px-4" id="btnSaveMapel">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ================= MODAL TAHUN ================= -->
+<div class="modal fade" id="modalTahun" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content border-0 rounded-4 shadow">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold" id="modalTahunTitle">Tambah Tahun Pelajaran</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form onsubmit="saveTahunForm(event)">
+        <div class="modal-body">
+          <input type="hidden" id="tahunId">
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Tahun Pelajaran</label>
+            <input type="text" class="form-control" id="tahunNama" placeholder="Contoh: 2026/2027" required>
+          </div>
+          <div class="mb-3" id="groupTahunStatus">
+            <label class="form-label small fw-semibold">Status</label>
+            <select class="form-select" id="tahunStatus">
+              <option value="AKTIF">AKTIF</option>
+              <option value="NONAKTIF">NONAKTIF</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-light rounded-pill" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-secondary rounded-pill px-4" id="btnSaveTahun">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* CSS Khusus Kartu QR Pintar 4-Orientasi */
+  .qr-card-wrapper {
+    background: #fff;
+    border: 2px dashed #0d6efd;
+    border-radius: 12px;
+    padding: 12px;
+    position: relative;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  }
+  .orientation-marker {
+    font-weight: 900;
+    font-size: 1.6rem;
+    color: #111;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    background: rgba(0,0,0,0.04);
+  }
+  .marker-top { top: 8px; left: 50%; transform: translateX(-50%); color: #dc3545; }
+  .marker-right { right: 8px; top: 50%; transform: translateY(-50%); color: #0d6efd; }
+  .marker-bottom { bottom: 8px; left: 50%; transform: translateX(-50%); color: #198754; }
+  .marker-left { left: 8px; top: 50%; transform: translateY(-50%); color: #ffc107; }
+
+  .qr-box {
+    width: 170px;
+    height: 170px;
+    margin: 36px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .qr-box img, .qr-box canvas {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  /* Format cetak lembar A4 (4 Kartu per halaman) */
+  @media print {
+    @page {
+      size: A4 portrait;
+      margin: 10mm;
+    }
+    .print-grid {
+      display: grid !important;
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 8mm !important;
+    }
+    .qr-card-wrapper {
+      border: 2px solid #000 !important;
+      box-shadow: none !important;
+      page-break-inside: avoid;
+    }
+    .orientation-marker {
+      background: none !important;
+      font-size: 2rem !important;
+      color: #000 !important;
+    }
+  }
+</style>
+
+<script>
+  let rawCache = {
+    guru: [],
+    siswa: [],
+    kelas: [],
+    mapel: [],
+    tahun: [],
+    kartu: []
+  };
+
+  function showAdminNotice(msg, isSuccess = true) {
+    const alert = document.getElementById("adminNotification");
+    const msgEl = document.getElementById("adminNotificationMsg");
+    if (!alert || !msgEl) return;
+    alert.className = `alert ${isSuccess ? 'alert-success' : 'alert-danger'} alert-dismissible fade show py-2 px-3 small`;
+    msgEl.textContent = msg;
+    setTimeout(() => {
+      alert.className = 'alert alert-success alert-dismissible fade d-none py-2 px-3 small';
+    }, 4000);
+  }
+
+  function initAdminDashboard() {
+    if (AppState.user) {
+      const elNav = document.getElementById("adminNavbarName");
+      const elWelcome = document.getElementById("adminWelcome");
+      if (elNav) elNav.textContent = AppState.user.nama;
+      if (elWelcome) elWelcome.textContent = `Selamat Datang, ${AppState.user.nama}!`;
+    }
+    loadAdminStats();
+    loadKelasData(); // untuk dropdown kelas
+  }
+
+  function switchAdminTab(tabName) {
+    document.querySelectorAll(".admin-tab-pane").forEach(p => p.classList.add("d-none"));
+    const activePane = document.getElementById(`tab-${tabName}`);
+    if (activePane) activePane.classList.remove("d-none");
+
+    const buttons = document.querySelectorAll("#adminTabs .nav-link");
+    buttons.forEach(btn => {
+      btn.classList.remove("active");
+      btn.classList.add("text-secondary");
+    });
+    const clickedBtn = event.currentTarget || event.target;
+    if (clickedBtn) {
+      clickedBtn.classList.add("active");
+      clickedBtn.classList.remove("text-secondary");
+    }
+
+    if (tabName === "overview") loadAdminStats();
+    if (tabName === "guru") loadGuruData();
+    if (tabName === "siswa") loadSiswaData();
+    if (tabName === "cetak-qr") loadKartuSiswa();
+    if (tabName === "kelas") loadKelasData();
+    if (tabName === "mapel") loadMapelData();
+    if (tabName === "tahun") loadTahunData();
+    if (tabName === "rekap-hasil") loadRekapAdmin();
+  }
+
+  function loadRekapAdmin() {
+    const tbody = document.getElementById("tbodyRekapAdmin");
+    tbody.innerHTML = `<tr><td colspan="9" class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm text-primary me-2"></div> Memuat rekapitulasi...</td></tr>`;
+
+    const filterTahun = document.getElementById("adminFilterTahun").value;
+    const filterKelas = document.getElementById("adminFilterKelas").value;
+    const filterMapel = document.getElementById("adminFilterMapel").value;
+
+    google.script.run
+      .withSuccessHandler(res => {
+        if (!res.success) {
+          tbody.innerHTML = `<tr><td colspan="9" class="text-center py-4 text-danger">${res.message}</td></tr>`;
+          return;
+        }
+
+        // Isi dropdown filter jika masih kosong
+        const selTahun = document.getElementById("adminFilterTahun");
+        const selKelas = document.getElementById("adminFilterKelas");
+        const selMapel = document.getElementById("adminFilterMapel");
+
+        if (selTahun.options.length <= 1 && res.data.masterFilter.tahun) {
+          res.data.masterFilter.tahun.forEach(t => {
+            selTahun.innerHTML += `<option value="${t.tahun_id}">${t.nama_tahun}</option>`;
+          });
+        }
+        if (selKelas.options.length <= 1 && res.data.masterFilter.kelas) {
+          res.data.masterFilter.kelas.forEach(k => {
+            selKelas.innerHTML += `<option value="${k.kelas_id}">${k.nama_kelas}</option>`;
+          });
+        }
+        if (selMapel.options.length <= 1 && res.data.masterFilter.mapel) {
+          res.data.masterFilter.mapel.forEach(m => {
+            selMapel.innerHTML += `<option value="${m.mapel_id}">${m.nama_mapel}</option>`;
+          });
+        }
+
+        const list = res.data.rekapList || [];
+        rawCache.rekapList = list;
+        if (list.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="9" class="text-center py-4 text-muted">Belum ada kuis yang selesai dievaluasi dengan filter ini.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = list.map(item => `
+          <tr>
+            <td class="fw-bold text-dark">${item.judul}</td>
+            <td><span class="badge bg-light text-dark border">${item.nama_guru}</span></td>
+            <td>${item.nama_kelas}</td>
+            <td>${item.nama_mapel}</td>
+            <td class="fw-bold text-center">${item.total_peserta} Santri</td>
+            <td class="text-primary fw-bold font-monospace">${item.rata_rata_nilai.toLocaleString()}</td>
+            <td class="text-success fw-bold font-monospace">${item.nilai_tertinggi.toLocaleString()}</td>
+            <td class="text-danger fw-bold font-monospace">${item.nilai_terendah.toLocaleString()}</td>
+            <td>
+              <span class="badge ${item.persentase_ketuntasan >= 75 ? 'bg-success' : 'bg-warning text-dark'}">
+                ${item.persentase_ketuntasan}% Tuntas
+              </span>
+            </td>
+          </tr>
+        `).join("");
+      })
+      .getAllQuizResultsAdmin(AppState.token, {
+        tahun_id: filterTahun,
+        kelas_id: filterKelas,
+        mapel_id: filterMapel
+      });
+  }
+
+  // ================= EKSPOR REKAP HASIL ADMIN KE CSV =================
+  function exportRekapAdminCSV() {
+    if (!rawCache.rekapList || rawCache.rekapList.length === 0) {
+      return showAdminNotice("Belum ada data rekapitulasi untuk diekspor.", false);
+    }
+
+    let csvContent = "\uFEFF"; // UTF-8 BOM
+    csvContent += `REKAPITULASI HASIL KUIS SMPI AN-NAMA'\n`;
+    csvContent += `Judul Kuis,Guru Pengampu,Kelas,Mata Pelajaran,Total Peserta,Rata-rata Nilai,Nilai Tertinggi,Nilai Terendah,% Ketuntasan\n`;
+
+    rawCache.rekapList.forEach(item => {
+      const judulEsc = `"${(item.judul || '').replace(/"/g, '""')}"`;
+      const guruEsc = `"${(item.nama_guru || '').replace(/"/g, '""')}"`;
+      const kelasEsc = `"${(item.nama_kelas || '').replace(/"/g, '""')}"`;
+      const mapelEsc = `"${(item.nama_mapel || '').replace(/"/g, '""')}"`;
+
+      csvContent += `${judulEsc},${guruEsc},${kelasEsc},${mapelEsc},${item.total_peserta},${item.rata_rata_nilai},${item.nilai_tertinggi},${item.nilai_terendah},${item.persentase_ketuntasan}%\n`;
+    });
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `Rekap_Kuis_Annama_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    showAdminNotice("File CSV rekapitulasi kuis berhasil diunduh!", true);
+  }
+
+  function loadAdminStats() {
+    google.script.run
+      .withSuccessHandler(res => {
+        if (res.success) {
+          document.getElementById("statGuru").textContent = res.data.totalGuru;
+          document.getElementById("statSiswa").textContent = res.data.totalSiswa;
+          document.getElementById("statKelas").textContent = res.data.totalKelas;
+          document.getElementById("statMapel").textContent = res.data.totalMapel;
+          document.getElementById("statTahun").textContent = res.data.totalTahun;
+        }
+      })
+      .getAdminStats(AppState.token);
+  }
+
+  // ================= 1. GURU =================
+  function loadGuruData() {
+    const tbody = document.getElementById("tbodyGuru");
+    tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-muted">Memuat data...</td></tr>`;
+    google.script.run
+      .withSuccessHandler(res => {
+        if (!res.success) return showAdminNotice(res.message, false);
+        rawCache.guru = res.data || [];
+        if (rawCache.guru.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-muted">Belum ada guru.</td></tr>`;
+          return;
+        }
+        tbody.innerHTML = rawCache.guru.map(g => `
+          <tr>
+            <td><code>${g.guru_id}</code></td>
+            <td class="fw-semibold">${g.nama}</td>
+            <td><span class="badge bg-light text-dark border">${g.username}</span></td>
+            <td>${g.email || '-'}</td>
+            <td><span class="badge ${g.status === 'AKTIF' ? 'bg-success' : 'bg-secondary'}">${g.status}</span></td>
+            <td>
+              <button class="btn btn-sm btn-outline-primary rounded-pill px-2" onclick="editGuru('${g.guru_id}')">
+                <i class="bi bi-pencil-square"></i> Edit
+              </button>
+            </td>
+          </tr>
+        `).join("");
+      })
+      .getGuruList(AppState.token);
+  }
+
+  function openModalGuru() {
+    document.getElementById("guruId").value = "";
+    document.getElementById("guruNama").value = "";
+    document.getElementById("guruUsername").value = "";
+    document.getElementById("guruUsername").disabled = false;
+    document.getElementById("guruEmail").value = "";
+    document.getElementById("guruPassword").value = "";
+    document.getElementById("groupGuruPassword").classList.remove("d-none");
+    document.getElementById("modalGuruTitle").textContent = "Tambah Guru Baru";
+    new bootstrap.Modal(document.getElementById("modalGuru")).show();
+  }
+
+  function editGuru(id) {
+    const item = rawCache.guru.find(g => g.guru_id === id);
+    if (!item) return;
+    document.getElementById("guruId").value = item.guru_id;
+    document.getElementById("guruNama").value = item.nama;
+    document.getElementById("guruUsername").value = item.username;
+    document.getElementById("guruUsername").disabled = true;
+    document.getElementById("guruEmail").value = item.email || "";
+    document.getElementById("guruStatus").value = item.status;
+    document.getElementById("groupGuruPassword").classList.add("d-none");
+    document.getElementById("modalGuruTitle").textContent = "Edit Data Guru";
+    new bootstrap.Modal(document.getElementById("modalGuru")).show();
+  }
+
+  function saveGuruForm(e) {
+    e.preventDefault();
+    const btn = document.getElementById("btnSaveGuru");
+    btn.disabled = true;
+    const payload = {
+      guru_id: document.getElementById("guruId").value,
+      nama: document.getElementById("guruNama").value,
+      username: document.getElementById("guruUsername").value,
+      password: document.getElementById("guruPassword").value,
+      email: document.getElementById("guruEmail").value,
+      status: document.getElementById("guruStatus").value
+    };
+    google.script.run
+      .withSuccessHandler(res => {
+        btn.disabled = false;
+        bootstrap.Modal.getInstance(document.getElementById("modalGuru")).hide();
+        showAdminNotice(res.message, res.success);
+        loadGuruData();
+      })
+      .withFailureHandler(err => {
+        btn.disabled = false;
+        showAdminNotice(err.message, false);
+      })
+      .saveGuru(AppState.token, payload);
+  }
+
+  // ================= 2. SISWA =================
+  function loadSiswaData() {
+    const tbody = document.getElementById("tbodySiswa");
+    tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted">Memuat data...</td></tr>`;
+    google.script.run
+      .withSuccessHandler(res => {
+        if (!res.success) return showAdminNotice(res.message, false);
+        rawCache.siswa = res.data || [];
+        if (rawCache.siswa.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted">Belum ada siswa.</td></tr>`;
+          return;
+        }
+        tbody.innerHTML = rawCache.siswa.map(s => `
+          <tr>
+            <td><code>${s.student_id}</code></td>
+            <td>${s.nis || '-'}</td>
+            <td class="fw-semibold">${s.nama}</td>
+            <td><span class="badge bg-light text-dark border">${s.kelas_id}</span></td>
+            <td><span class="badge bg-secondary font-monospace">${s.token_qr}</span></td>
+            <td><span class="badge ${s.status === 'AKTIF' ? 'bg-success' : 'bg-secondary'}">${s.status}</span></td>
+            <td>
+              <button class="btn btn-sm btn-outline-success rounded-pill px-2" onclick="editSiswa('${s.student_id}')">
+                <i class="bi bi-pencil-square"></i> Edit
+              </button>
+            </td>
+          </tr>
+        `).join("");
+      })
+      .getSiswaList(AppState.token);
+  }
+
+  function openModalSiswa() {
+    document.getElementById("siswaId").value = "";
+    document.getElementById("siswaNis").value = "";
+    document.getElementById("siswaNama").value = "";
+    document.getElementById("modalSiswaTitle").textContent = "Tambah Siswa Baru";
+    populateKelasDropdown();
+    new bootstrap.Modal(document.getElementById("modalSiswa")).show();
+  }
+
+  function editSiswa(id) {
+    const item = rawCache.siswa.find(s => s.student_id === id);
+    if (!item) return;
+    document.getElementById("siswaId").value = item.student_id;
+    document.getElementById("siswaNis").value = item.nis || "";
+    document.getElementById("siswaNama").value = item.nama;
+    populateKelasDropdown(item.kelas_id);
+    document.getElementById("siswaStatus").value = item.status;
+    document.getElementById("modalSiswaTitle").textContent = "Edit Data Siswa";
+    new bootstrap.Modal(document.getElementById("modalSiswa")).show();
+  }
+
+  function populateKelasDropdown(selectedId = "") {
+    const select = document.getElementById("siswaKelas");
+    if (!select) return;
+    select.innerHTML = `<option value="">Pilih Kelas</option>` + rawCache.kelas.map(k => `
+      <option value="${k.kelas_id}" ${k.kelas_id === selectedId ? 'selected' : ''}>${k.nama_kelas} (${k.kelas_id})</option>
+    `).join("");
+  }
+
+  function saveSiswaForm(e) {
+    e.preventDefault();
+    const btn = document.getElementById("btnSaveSiswa");
+    btn.disabled = true;
+    const payload = {
+      student_id: document.getElementById("siswaId").value,
+      nis: document.getElementById("siswaNis").value,
+      nama: document.getElementById("siswaNama").value,
+      kelas_id: document.getElementById("siswaKelas").value,
+      status: document.getElementById("siswaStatus").value
+    };
+    google.script.run
+      .withSuccessHandler(res => {
+        btn.disabled = false;
+        bootstrap.Modal.getInstance(document.getElementById("modalSiswa")).hide();
+        showAdminNotice(res.message, res.success);
+        loadSiswaData();
+      })
+      .withFailureHandler(err => {
+        btn.disabled = false;
+        showAdminNotice(err.message, false);
+      })
+      .saveSiswa(AppState.token, payload);
+  }
+
+  // ================= 3. CETAK KARTU QR (V1.2) =================
+  function loadKartuSiswa() {
+    const container = document.getElementById("previewKartuContainer");
+    const filterKelas = document.getElementById("filterCetakKelas").value;
+    container.innerHTML = `<div class="col-12 text-center py-5 text-muted"><div class="spinner-border text-primary spinner-border-sm me-2"></div> Menyiapkan kartu...</div>`;
+
+    // Pastikan dropdown filter kelas terisi
+    const filterSelect = document.getElementById("filterCetakKelas");
+    if (filterSelect && filterSelect.options.length <= 1 && rawCache.kelas.length > 0) {
+      rawCache.kelas.forEach(k => {
+        const opt = document.createElement("option");
+        opt.value = k.kelas_id;
+        opt.textContent = `${k.nama_kelas} (${k.kelas_id})`;
+        filterSelect.appendChild(opt);
+      });
+    }
+
+    google.script.run
+      .withSuccessHandler(res => {
+        if (!res.success) {
+          container.innerHTML = `<div class="col-12 text-center py-4 text-danger">${res.message}</div>`;
+          return;
+        }
+
+        rawCache.kartu = res.data || [];
+        if (rawCache.kartu.length === 0) {
+          container.innerHTML = `<div class="col-12 text-center py-5 text-muted">Tidak ada data siswa aktif.</div>`;
+          return;
+        }
+
+        container.innerHTML = rawCache.kartu.map((k, idx) => `
+          <div class="col-md-6 col-lg-4 mb-3">
+            <div class="qr-card-wrapper" id="card-${k.student_id}">
+              <!-- Header Kartu -->
+              <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
+                <div>
+                  <h6 class="fw-bold mb-0 text-dark">${k.nama}</h6>
+                  <small class="text-muted">${k.nama_kelas} | NIS: ${k.nis}</small>
+                </div>
+                <span class="badge bg-primary font-monospace">${k.student_id}</span>
+              </div>
+
+              <!-- 4 Orientasi Jawaban A, B, C, D -->
+              <div class="orientation-marker marker-top">A</div>
+              <div class="orientation-marker marker-right">B</div>
+              <div class="orientation-marker marker-bottom">C</div>
+              <div class="orientation-marker marker-left">D</div>
+
+              <!-- QR Code Box -->
+              <div class="qr-box" id="qrcode-${k.student_id}"></div>
+
+              <!-- Footer Kartu -->
+              <div class="text-center border-top pt-2 d-flex justify-content-between align-items-center">
+                <small class="text-muted font-monospace" style="font-size: 0.7rem;">${k.token_qr}</small>
+                <small class="text-muted fw-semibold" style="font-size: 0.7rem;">AN-NAMA QUIZ</small>
+              </div>
+            </div>
+          </div>
+        `).join("");
+
+        // Render QR Code untuk masing-masing siswa menggunakan qrcode.js
+        setTimeout(() => {
+          rawCache.kartu.forEach(k => {
+            const el = document.getElementById(`qrcode-${k.student_id}`);
+            if (el) {
+              el.innerHTML = "";
+              new QRCode(el, {
+                text: k.qr_payload,
+                width: 160,
+                height: 160,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.M
+              });
+            }
+          });
+        }, 100);
+
+      })
+      .getKartuSiswaData(AppState.token, filterKelas);
+  }
+
+  function cetakKartuSiswa() {
+    if (!rawCache.kartu || rawCache.kartu.length === 0) {
+      alert("Tidak ada kartu siswa untuk dicetak.");
+      return;
+    }
+
+    const printArea = document.getElementById("printArea");
+    printArea.innerHTML = `
+      <div class="p-3">
+        <div class="text-center mb-3">
+          <h4 class="fw-bold mb-0">SMPI AN-NAMA' / MA'HAD AN-NAMA'</h4>
+          <p class="text-muted small mb-0">KARTU JAWABAN LIVE QUIZ (ORIENTASI A, B, C, D)</p>
+        </div>
+        <div class="print-grid">
+          ${document.getElementById("previewKartuContainer").innerHTML}
+        </div>
+      </div>
+    `;
+
+    printArea.classList.remove("d-none");
+    window.print();
+    printArea.classList.add("d-none");
+  }
+
+  // ================= 4. KELAS =================
+  function loadKelasData() {
+    const tbody = document.getElementById("tbodyKelas");
+    if (tbody) tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-muted">Memuat data...</td></tr>`;
+    google.script.run
+      .withSuccessHandler(res => {
+        if (!res.success) return;
+        rawCache.kelas = res.data || [];
+        if (!tbody) return;
+        if (rawCache.kelas.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-muted">Belum ada kelas.</td></tr>`;
+          return;
+        }
+        tbody.innerHTML = rawCache.kelas.map(k => `
+          <tr>
+            <td><code>${k.kelas_id}</code></td>
+            <td class="fw-semibold">${k.nama_kelas}</td>
+            <td>Tingkat ${k.tingkat || '-'}</td>
+            <td>${k.tahun_pelajaran || '-'}</td>
+            <td><span class="badge ${k.status === 'AKTIF' ? 'bg-success' : 'bg-secondary'}">${k.status}</span></td>
+            <td>
+              <button class="btn btn-sm btn-outline-warning rounded-pill px-2" onclick="editKelas('${k.kelas_id}')">
+                <i class="bi bi-pencil-square"></i> Edit
+              </button>
+            </td>
+          </tr>
+        `).join("");
+      })
+      .getKelasList(AppState.token);
+  }
+
+  function openModalKelas() {
+    document.getElementById("kelasId").value = "";
+    document.getElementById("kelasNama").value = "";
+    document.getElementById("kelasTingkat").value = "";
+    document.getElementById("kelasTahun").value = "";
+    document.getElementById("modalKelasTitle").textContent = "Tambah Kelas Baru";
+    new bootstrap.Modal(document.getElementById("modalKelas")).show();
+  }
+
+  function editKelas(id) {
+    const item = rawCache.kelas.find(k => k.kelas_id === id);
+    if (!item) return;
+    document.getElementById("kelasId").value = item.kelas_id;
+    document.getElementById("kelasNama").value = item.nama_kelas;
+    document.getElementById("kelasTingkat").value = item.tingkat || "";
+    document.getElementById("kelasTahun").value = item.tahun_pelajaran || "";
+    document.getElementById("kelasStatus").value = item.status;
+    document.getElementById("modalKelasTitle").textContent = "Edit Data Kelas";
+    new bootstrap.Modal(document.getElementById("modalKelas")).show();
+  }
+
+  function saveKelasForm(e) {
+    e.preventDefault();
+    const btn = document.getElementById("btnSaveKelas");
+    btn.disabled = true;
+    const payload = {
+      kelas_id: document.getElementById("kelasId").value,
+      nama_kelas: document.getElementById("kelasNama").value,
+      tingkat: document.getElementById("kelasTingkat").value,
+      tahun_pelajaran: document.getElementById("kelasTahun").value,
+      status: document.getElementById("kelasStatus").value
+    };
+    google.script.run
+      .withSuccessHandler(res => {
+        btn.disabled = false;
+        bootstrap.Modal.getInstance(document.getElementById("modalKelas")).hide();
+        showAdminNotice(res.message, res.success);
+        loadKelasData();
+      })
+      .withFailureHandler(err => {
+        btn.disabled = false;
+        showAdminNotice(err.message, false);
+      })
+      .saveKelas(AppState.token, payload);
+  }
+
+  // ================= 5. MAPEL =================
+  function loadMapelData() {
+    const tbody = document.getElementById("tbodyMapel");
+    tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-muted">Memuat data...</td></tr>`;
+    google.script.run
+      .withSuccessHandler(res => {
+        if (!res.success) return;
+        rawCache.mapel = res.data || [];
+        if (rawCache.mapel.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-muted">Belum ada mata pelajaran.</td></tr>`;
+          return;
+        }
+        tbody.innerHTML = rawCache.mapel.map(m => `
+          <tr>
+            <td><code>${m.mapel_id}</code></td>
+            <td class="fw-semibold">${m.nama_mapel}</td>
+            <td><span class="badge ${m.status === 'AKTIF' ? 'bg-success' : 'bg-secondary'}">${m.status}</span></td>
+            <td>
+              <button class="btn btn-sm btn-outline-info rounded-pill px-2" onclick="editMapel('${m.mapel_id}')">
+                <i class="bi bi-pencil-square"></i> Edit
+              </button>
+            </td>
+          </tr>
+        `).join("");
+      })
+      .getMapelList(AppState.token);
+  }
+
+  function openModalMapel() {
+    document.getElementById("mapelId").value = "";
+    document.getElementById("mapelNama").value = "";
+    document.getElementById("modalMapelTitle").textContent = "Tambah Mata Pelajaran";
+    new bootstrap.Modal(document.getElementById("modalMapel")).show();
+  }
+
+  function editMapel(id) {
+    const item = rawCache.mapel.find(m => m.mapel_id === id);
+    if (!item) return;
+    document.getElementById("mapelId").value = item.mapel_id;
+    document.getElementById("mapelNama").value = item.nama_mapel;
+    document.getElementById("mapelStatus").value = item.status;
+    document.getElementById("modalMapelTitle").textContent = "Edit Mata Pelajaran";
+    new bootstrap.Modal(document.getElementById("modalMapel")).show();
+  }
+
+  function saveMapelForm(e) {
+    e.preventDefault();
+    const btn = document.getElementById("btnSaveMapel");
+    btn.disabled = true;
+    const payload = {
+      mapel_id: document.getElementById("mapelId").value,
+      nama_mapel: document.getElementById("mapelNama").value,
+      status: document.getElementById("mapelStatus").value
+    };
+    google.script.run
+      .withSuccessHandler(res => {
+        btn.disabled = false;
+        bootstrap.Modal.getInstance(document.getElementById("modalMapel")).hide();
+        showAdminNotice(res.message, res.success);
+        loadMapelData();
+      })
+      .withFailureHandler(err => {
+        btn.disabled = false;
+        showAdminNotice(err.message, false);
+      })
+      .saveMapel(AppState.token, payload);
+  }
+
+  // ================= 6. TAHUN =================
+  function loadTahunData() {
+    const tbody = document.getElementById("tbodyTahun");
+    tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-muted">Memuat data...</td></tr>`;
+    google.script.run
+      .withSuccessHandler(res => {
+        if (!res.success) return;
+        rawCache.tahun = res.data || [];
+        if (rawCache.tahun.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-muted">Belum ada tahun pelajaran.</td></tr>`;
+          return;
+        }
+        tbody.innerHTML = rawCache.tahun.map(t => `
+          <tr>
+            <td><code>${t.tahun_id}</code></td>
+            <td class="fw-semibold">${t.nama_tahun}</td>
+            <td><span class="badge ${t.status === 'AKTIF' ? 'bg-success' : 'bg-secondary'}">${t.status}</span></td>
+            <td>
+              <button class="btn btn-sm btn-outline-secondary rounded-pill px-2" onclick="editTahun('${t.tahun_id}')">
+                <i class="bi bi-pencil-square"></i> Edit
+              </button>
+            </td>
+          </tr>
+        `).join("");
+      })
+      .getTahunList(AppState.token);
+  }
+
+  function openModalTahun() {
+    document.getElementById("tahunId").value = "";
+    document.getElementById("tahunNama").value = "";
+    document.getElementById("modalTahunTitle").textContent = "Tambah Tahun Pelajaran";
+    new bootstrap.Modal(document.getElementById("modalTahun")).show();
+  }
+
+  function editTahun(id) {
+    const item = rawCache.tahun.find(t => t.tahun_id === id);
+    if (!item) return;
+    document.getElementById("tahunId").value = item.tahun_id;
+    document.getElementById("tahunNama").value = item.nama_tahun;
+    document.getElementById("tahunStatus").value = item.status;
+    document.getElementById("modalTahunTitle").textContent = "Edit Tahun Pelajaran";
+    new bootstrap.Modal(document.getElementById("modalTahun")).show();
+  }
+
+  function saveTahunForm(e) {
+    e.preventDefault();
+    const btn = document.getElementById("btnSaveTahun");
+    btn.disabled = true;
+    const payload = {
+      tahun_id: document.getElementById("tahunId").value,
+      nama_tahun: document.getElementById("tahunNama").value,
+      status: document.getElementById("tahunStatus").value
+    };
+    google.script.run
+      .withSuccessHandler(res => {
+        btn.disabled = false;
+        bootstrap.Modal.getInstance(document.getElementById("modalTahun")).hide();
+        showAdminNotice(res.message, res.success);
+        loadTahunData();
+      })
+      .withFailureHandler(err => {
+        btn.disabled = false;
+        showAdminNotice(err.message, false);
+      })
+      .saveTahun(AppState.token, payload);
+  }
+</script>

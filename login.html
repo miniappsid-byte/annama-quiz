@@ -1,0 +1,97 @@
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-5 col-lg-4">
+      
+      <!-- Card Login -->
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4 p-md-5">
+          
+          <!-- Logo & Header -->
+          <div class="text-center mb-4">
+            <div class="d-inline-flex p-3 rounded-circle bg-primary bg-opacity-10 text-primary mb-2">
+              <i class="bi bi-patch-question-fill fs-2"></i>
+            </div>
+            <h3 class="brand-title text-primary mb-0">AN-NAMA QUIZ</h3>
+            <p class="text-muted small">Live Quiz & Assessment Platform</p>
+          </div>
+
+          <!-- Alert Error -->
+          <div id="loginAlert" class="alert alert-danger py-2 px-3 small d-none" role="alert"></div>
+
+          <!-- Form Login -->
+          <form id="formLogin" onsubmit="submitLogin(event)">
+            <div class="mb-3">
+              <label class="form-label small text-muted fw-semibold">Username</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-person"></i></span>
+                <input type="text" class="form-control bg-light border-start-0" id="loginUsername" placeholder="Contoh: admin / guru1" required autocomplete="username">
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label small text-muted fw-semibold">Password</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-lock"></i></span>
+                <input type="password" class="form-control bg-light border-start-0" id="loginPassword" placeholder="Masukkan password" required autocomplete="current-password">
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 py-2 rounded-3 fw-semibold" id="btnLogin">
+              <span id="btnLoginText"><i class="bi bi-box-arrow-in-right me-1"></i> Masuk</span>
+              <span id="btnLoginSpinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+            </button>
+          </form>
+
+          <div class="text-center mt-4">
+            <small class="text-muted">SMPI An-Nama' / Ma'had An-Nama'</small>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  function submitLogin(e) {
+    e.preventDefault();
+    const alertBox = document.getElementById("loginAlert");
+    const username = document.getElementById("loginUsername").value.trim();
+    const password = document.getElementById("loginPassword").value;
+
+    const btnText = document.getElementById("btnLoginText");
+    const btnSpinner = document.getElementById("btnLoginSpinner");
+    const btn = document.getElementById("btnLogin");
+
+    alertBox.classList.add("d-none");
+    btn.disabled = true;
+    btnText.classList.add("d-none");
+    btnSpinner.classList.remove("d-none");
+
+    google.script.run
+      .withSuccessHandler(response => {
+        btn.disabled = false;
+        btnText.classList.remove("d-none");
+        btnSpinner.classList.add("d-none");
+
+        if (response.success) {
+          AppState.user = response.data;
+          AppState.token = response.data.token;
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(response.data));
+          routeByRole(response.data.role);
+        } else {
+          alertBox.textContent = response.message;
+          alertBox.classList.remove("d-none");
+        }
+      })
+      .withFailureHandler(err => {
+        btn.disabled = false;
+        btnText.classList.remove("d-none");
+        btnSpinner.classList.add("d-none");
+        alertBox.textContent = "Koneksi gagal: " + err.message;
+        alertBox.classList.remove("d-none");
+      })
+      .handleLogin({ username: username, password: password });
+  }
+</script>

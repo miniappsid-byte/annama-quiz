@@ -1,0 +1,685 @@
+<style>
+  /* CSS Laptop Live Quiz Presentation Mode */
+  .live-quiz-screen {
+    min-height: 100vh;
+    background: #0f172a;
+    color: #f8fafc;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .live-header {
+    background: rgba(30, 41, 59, 0.85);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 1rem 1.5rem;
+  }
+  .live-question-card {
+    background: #1e293b;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 2.2rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    margin: 1rem 0;
+  }
+  .question-text {
+    font-size: 1.85rem;
+    font-weight: 700;
+    line-height: 1.4;
+    color: #f1f5f9;
+  }
+  .option-card {
+    border-radius: 14px;
+    padding: 1.1rem 1.4rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: transform 0.2s;
+    border: 2px solid transparent;
+  }
+  .option-card:hover {
+    transform: translateY(-2px);
+  }
+  .option-a { background: rgba(239, 68, 68, 0.15); border-color: #ef4444; color: #fca5a5; }
+  .option-b { background: rgba(59, 130, 246, 0.15); border-color: #3b82f6; color: #93c5fd; }
+  .option-c { background: rgba(34, 197, 94, 0.15); border-color: #22c55e; color: #86efac; }
+  .option-d { background: rgba(234, 179, 8, 0.15); border-color: #eab308; color: #fde047; }
+  
+  .badge-letter {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #fff;
+  }
+  .badge-letter-a { background: #ef4444; }
+  .badge-letter-b { background: #3b82f6; }
+  .badge-letter-c { background: #22c55e; }
+  .badge-letter-d { background: #eab308; }
+
+  .timer-circle {
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    border: 4px solid #3b82f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #38bdf8;
+    background: rgba(15, 23, 42, 0.6);
+  }
+  .timer-warning {
+    border-color: #ef4444 !important;
+    color: #ef4444 !important;
+    animation: pulseTimer 1s infinite;
+  }
+  @keyframes pulseTimer {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+  }
+  .live-footer {
+    background: rgba(30, 41, 59, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 1rem 1.5rem;
+  }
+
+  /* Live Ranking Sidebar / Bar */
+  .leaderboard-panel {
+    background: #1e293b;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 1.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  }
+  .rank-row {
+    background: rgba(15, 23, 42, 0.6);
+    border-radius: 12px;
+    padding: 0.6rem 1rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.4s ease;
+  }
+  .rank-row-top1 { border: 2px solid #ffd700; background: rgba(255, 215, 0, 0.1); }
+  .rank-row-top2 { border: 1px solid #c0c0c0; background: rgba(192, 192, 192, 0.1); }
+  .rank-row-top3 { border: 1px solid #cd7f32; background: rgba(205, 127, 50, 0.1); }
+
+  .rank-badge {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.9rem;
+  }
+  .rank-badge-1 { background: #ffd700; color: #000; }
+  .rank-badge-2 { background: #c0c0c0; color: #000; }
+  .rank-badge-3 { background: #cd7f32; color: #fff; }
+  .rank-badge-other { background: rgba(255, 255, 255, 0.1); color: #fff; }
+
+  /* Animasi Perpindahan Posisi Ranking */
+  .rank-up-anim {
+    animation: rankUpGlow 1.2s ease;
+  }
+  @keyframes rankUpGlow {
+    0% { transform: scale(1); background: rgba(34, 197, 94, 0.4); }
+    50% { transform: scale(1.03); background: rgba(34, 197, 94, 0.7); }
+    100% { transform: scale(1); }
+  }
+
+  /* Podium Akhir */
+  .podium-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .podium-step {
+    text-align: center;
+    border-radius: 16px 16px 0 0;
+    padding: 1.5rem 1rem 1rem;
+    color: #fff;
+    width: 140px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  }
+  .podium-1 { background: linear-gradient(180deg, #ffd700 0%, #b8860b 100%); height: 210px; order: 2; }
+  .podium-2 { background: linear-gradient(180deg, #c0c0c0 0%, #808080 100%); height: 170px; order: 1; }
+  .podium-3 { background: linear-gradient(180deg, #cd7f32 0%, #8b4513 100%); height: 130px; order: 3; }
+</style>
+
+<div class="live-quiz-screen">
+  
+  <!-- Live Header -->
+  <div class="live-header d-flex justify-content-between align-items-center flex-wrap gap-3">
+    <div class="d-flex align-items-center gap-3">
+      <div class="p-2 bg-primary bg-opacity-25 rounded-3 text-primary fs-3">
+        <i class="bi bi-patch-question-fill"></i>
+      </div>
+      <div>
+        <h5 class="fw-bold mb-0 text-white" id="liveQuizTitle">AN-NAMA QUIZ</h5>
+        <small class="text-secondary" id="liveQuizSubtitle">Mapel - Kelas</small>
+      </div>
+    </div>
+
+    <!-- Toggle Live Ranking, Kode Kuis Unik & Timer -->
+    <div class="d-flex align-items-center gap-3">
+      
+      <!-- Tombol Switch Tampilkan/Sembunyikan Live Ranking -->
+      <button class="btn btn-outline-warning btn-sm rounded-pill px-3 fw-semibold" id="btnToggleRanking" onclick="toggleRankingVisibility()">
+        <i class="bi bi-trophy-fill me-1"></i> <span id="toggleRankingText">Sembunyikan Ranking</span>
+      </button>
+
+      <div class="text-center px-3 py-1 rounded-3 bg-dark bg-opacity-50 border border-secondary border-opacity-25">
+        <small class="text-secondary fw-semibold d-block" style="font-size: 0.7rem;">KODE KUIS</small>
+        <span class="fs-4 fw-bold font-monospace text-warning tracking-wider" id="liveQuizCode">ANM----</span>
+      </div>
+
+      <div class="timer-circle" id="liveTimer">
+        30
+      </div>
+
+      <!-- Tombol Audio Mute / Unmute -->
+      <button class="btn btn-outline-info btn-sm rounded-pill px-3" id="btnLiveSound" onclick="toggleQuizSound()" title="Audio Efek">
+        <i class="bi bi-volume-up-fill" id="iconLiveSound"></i>
+      </button>
+
+      <button class="btn btn-outline-light btn-sm rounded-pill px-3" onclick="toggleFullscreen()" title="Fullscreen Mode">
+        <i class="bi bi-arrows-fullscreen"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Body Content: Soal & Live Ranking Leaderboard -->
+  <div class="row g-3 my-auto">
+    
+    <!-- Kolom Kiri: Pertanyaan dan Pilihan A/B/C/D -->
+    <div id="colQuestion" class="col-lg-8">
+      <div class="live-question-card h-100 mb-0">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <span class="badge bg-primary px-3 py-2 rounded-pill fs-6 fw-bold" id="liveQuestionBadge">
+            SOAL 1 / 10
+          </span>
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-success bg-opacity-20 text-success border border-success border-opacity-25 px-3 py-2 rounded-pill fs-6 fw-bold">
+              <i class="bi bi-qr-code-scan me-1"></i> <span id="liveAnswerCount">0</span> / <span id="liveTotalStudents">0</span> SANTRI MENJAWAB
+            </span>
+          </div>
+        </div>
+
+        <!-- Teks Pertanyaan -->
+        <div class="question-text mb-4" id="liveQuestionText">
+          Memuat pertanyaan...
+        </div>
+
+        <!-- Opsi Pilihan Jawaban A, B, C, D -->
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="option-card option-a">
+              <div class="badge-letter badge-letter-a">A</div>
+              <div id="liveOptA" class="flex-grow-1">-</div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="option-card option-b">
+              <div class="badge-letter badge-letter-b">B</div>
+              <div id="liveOptB" class="flex-grow-1">-</div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="option-card option-c">
+              <div class="badge-letter badge-letter-c">C</div>
+              <div id="liveOptC" class="flex-grow-1">-</div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="option-card option-d">
+              <div class="badge-letter badge-letter-d">D</div>
+              <div id="liveOptD" class="flex-grow-1">-</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kolom Kanan: LIVE RANKING LEADERBOARD (V1.8) -->
+    <div id="colRanking" class="col-lg-4">
+      <div class="leaderboard-panel h-100">
+        <div class="d-flex justify-content-between align-items-center border-bottom border-secondary border-opacity-25 pb-2 mb-3">
+          <h6 class="fw-bold mb-0 text-warning">
+            <i class="bi bi-trophy-fill me-1"></i> LIVE RANKING
+          </h6>
+          <span class="badge bg-dark text-white-50 small" id="badgeRankingUpdate">Auto-update</span>
+        </div>
+
+        <!-- Banner Notifikasi Animasi Perubahan Posisi Ranking -->
+        <div id="rankChangeNotice" class="alert alert-success py-1 px-2 small mb-2 d-none text-center fw-bold" style="font-size: 0.8rem;">
+          <i class="bi bi-arrow-up-circle-fill me-1"></i> <span id="rankChangeText">Ahmad naik peringkat!</span>
+        </div>
+
+        <!-- List Top Ranking Siswa -->
+        <div id="liveRankingList" style="max-height: 400px; overflow-y: auto;">
+          <div class="text-center py-4 text-secondary small">
+            Belum ada santri yang menjawab.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Live Footer & Controls -->
+  <div class="live-footer d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <div>
+      <button class="btn btn-outline-danger btn-sm rounded-pill px-3" onclick="confirmExitLiveQuiz()">
+        <i class="bi bi-x-circle me-1"></i> Tutup Kuis
+      </button>
+    </div>
+
+    <div class="d-flex align-items-center gap-2">
+      <button class="btn btn-secondary rounded-pill px-4 fw-semibold" id="btnPrevSoal" onclick="prevLiveQuestion()">
+        <i class="bi bi-chevron-left me-1"></i> Soal Sebelumnya
+      </button>
+      <button class="btn btn-primary rounded-pill px-4 fw-semibold" id="btnNextSoal" onclick="nextLiveQuestion()">
+        Soal Berikutnya <i class="bi bi-chevron-right ms-1"></i>
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Modal Podium Hasil Akhir Kuis -->
+<div class="modal fade" id="modalFinalPodium" tabindex="-1" data-bs-backdrop="static">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content border-0 rounded-4 shadow-lg text-white" style="background: #0f172a;">
+      <div class="modal-header border-0 pb-0 text-center d-block">
+        <h3 class="fw-bold text-warning mb-0">🏆 HASIL AKHIR KUIS</h3>
+        <p class="text-white-50 small mb-0" id="podiumQuizTitle">Selamat kepada para santri berprestasi!</p>
+      </div>
+      <div class="modal-body py-4">
+        
+        <!-- Podium 3 Besar -->
+        <div class="podium-container" id="podiumBox">
+          <!-- Diisi via JavaScript -->
+        </div>
+
+        <!-- Tabel Lengkap Semua Nilai Siswa -->
+        <div class="card border-0 rounded-3 p-3 bg-dark bg-opacity-50 mt-4">
+          <h6 class="fw-bold text-warning mb-2"><i class="bi bi-list-ol me-1"></i> Klasemen Seluruh Siswa</h6>
+          <div class="table-responsive" style="max-height: 220px;">
+            <table class="table table-dark table-sm table-hover mb-0 align-middle">
+              <thead>
+                <tr class="text-secondary small">
+                  <th>Rank</th>
+                  <th>Nama Santri</th>
+                  <th>Benar</th>
+                  <th>Salah</th>
+                  <th>Rata-rata Waktu</th>
+                  <th class="text-end">Total Skor</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyFullFinalRank"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer border-0 pt-0 d-flex justify-content-center">
+        <button type="button" class="btn btn-primary rounded-pill px-5 fw-semibold" onclick="closePodiumAndReturn()">
+          Kembali ke Dashboard Guru
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let liveQuizState = {
+    session: null,
+    soalList: [],
+    currentIndex: 0,
+    timerSeconds: 30,
+    timerInterval: null,
+    pollingInterval: null,
+    isRankingVisible: true,
+    previousRankings: {}, // Map student_id => rank lama untuk deteksi naik peringkat
+    latestLeaderboard: []
+  };
+
+  function initLiveQuizScreen(sessionData, soalList) {
+    liveQuizState.session = sessionData;
+    liveQuizState.soalList = soalList || [];
+    liveQuizState.currentIndex = 0;
+    liveQuizState.previousRankings = {};
+    liveQuizState.latestLeaderboard = [];
+
+    document.getElementById("liveQuizTitle").textContent = sessionData.judul;
+    document.getElementById("liveQuizSubtitle").textContent = `${sessionData.namaMapel} • ${sessionData.namaKelas}`;
+    document.getElementById("liveQuizCode").textContent = sessionData.quizCode;
+    document.getElementById("liveTotalStudents").textContent = sessionData.totalSiswaKelas;
+
+    renderCurrentLiveQuestion();
+  }
+
+  function toggleRankingVisibility() {
+    liveQuizState.isRankingVisible = !liveQuizState.isRankingVisible;
+    const colRanking = document.getElementById("colRanking");
+    const colQuestion = document.getElementById("colQuestion");
+    const toggleText = document.getElementById("toggleRankingText");
+
+    if (liveQuizState.isRankingVisible) {
+      colRanking.classList.remove("d-none");
+      colQuestion.className = "col-lg-8";
+      toggleText.textContent = "Sembunyikan Ranking";
+    } else {
+      colRanking.classList.add("d-none");
+      colQuestion.className = "col-lg-12";
+      toggleText.textContent = "Tampilkan Ranking";
+    }
+  }
+
+  function renderCurrentLiveQuestion() {
+    clearInterval(liveQuizState.timerInterval);
+    clearInterval(liveQuizState.pollingInterval);
+
+    const q = liveQuizState.soalList[liveQuizState.currentIndex];
+    if (!q) return;
+
+    document.getElementById("liveQuestionBadge").textContent = `SOAL ${liveQuizState.currentIndex + 1} / ${liveQuizState.soalList.length}`;
+    document.getElementById("liveQuestionText").textContent = q.pertanyaan;
+    document.getElementById("liveOptA").textContent = q.opsi_a;
+    document.getElementById("liveOptB").textContent = q.opsi_b;
+    document.getElementById("liveOptC").textContent = q.opsi_c;
+    document.getElementById("liveOptD").textContent = q.opsi_d;
+
+    document.getElementById("btnPrevSoal").disabled = (liveQuizState.currentIndex === 0);
+    const nextBtn = document.getElementById("btnNextSoal");
+    if (liveQuizState.currentIndex === liveQuizState.soalList.length - 1) {
+      nextBtn.innerHTML = `Selesai Kuis <i class="bi bi-flag-fill ms-1"></i>`;
+      nextBtn.className = "btn btn-success rounded-pill px-4 fw-semibold";
+    } else {
+      nextBtn.innerHTML = `Soal Berikutnya <i class="bi bi-chevron-right ms-1"></i>`;
+      nextBtn.className = "btn btn-primary rounded-pill px-4 fw-semibold";
+    }
+
+    startLiveTimer(liveQuizState.session.durasi || 30);
+    startAnswerPolling(q.question_id);
+  }
+
+  function startLiveTimer(duration) {
+    liveQuizState.timerSeconds = duration;
+    const timerEl = document.getElementById("liveTimer");
+    timerEl.classList.remove("timer-warning");
+    timerEl.textContent = liveQuizState.timerSeconds;
+
+    liveQuizState.timerInterval = setInterval(() => {
+      liveQuizState.timerSeconds--;
+      timerEl.textContent = liveQuizState.timerSeconds;
+
+      if (liveQuizState.timerSeconds <= 5 && liveQuizState.timerSeconds > 0) {
+        timerEl.classList.add("timer-warning");
+        if (typeof SoundFX !== "undefined") SoundFX.timerTick();
+      }
+
+      if (liveQuizState.timerSeconds <= 0) {
+        clearInterval(liveQuizState.timerInterval);
+        timerEl.textContent = "0";
+        if (typeof SoundFX !== "undefined") SoundFX.timerEnd();
+      }
+    }, 1000);
+  }
+
+  function startAnswerPolling(questionId) {
+    pollAnswerCount(questionId);
+    liveQuizState.pollingInterval = setInterval(() => {
+      pollAnswerCount(questionId);
+    }, 2000);
+  }
+
+  function pollAnswerCount(questionId) {
+    if (!liveQuizState.session) return;
+    google.script.run
+      .withSuccessHandler(res => {
+        if (res && res.success) {
+          document.getElementById("liveAnswerCount").textContent = res.data.jumlahMenjawab;
+          if (res.data.totalSiswa) {
+            document.getElementById("liveTotalStudents").textContent = res.data.totalSiswa;
+          }
+
+          // Update Live Ranking & Deteksi Perubahan Posisi
+          if (res.data.leaderboard) {
+            liveQuizState.latestLeaderboard = res.data.leaderboard;
+            updateLiveLeaderboardUI(res.data.leaderboard);
+          }
+        }
+      })
+      .getLiveQuizStatus(liveQuizState.session.quizId, questionId);
+  }
+
+  // ================= RENDER LIVE RANKING & ANIMASI NAIK PERINGKAT =================
+  function updateLiveLeaderboardUI(leaderboard) {
+    const listContainer = document.getElementById("liveRankingList");
+    if (!leaderboard || leaderboard.length === 0) {
+      listContainer.innerHTML = `<div class="text-center py-4 text-secondary small">Belum ada santri yang menjawab.</div>`;
+      return;
+    }
+
+    // Cek santri yang posisinya naik
+    let climber = null;
+    leaderboard.forEach(item => {
+      const oldRank = liveQuizState.previousRankings[item.student_id];
+      if (oldRank && item.ranking < oldRank) {
+        climber = { nama: item.nama, from: oldRank, to: item.ranking };
+      }
+      liveQuizState.previousRankings[item.student_id] = item.ranking;
+    });
+
+    // Tampilkan banner notifikasi animasi jika ada santri naik peringkat
+    if (climber) {
+      const notice = document.getElementById("rankChangeNotice");
+      const text = document.getElementById("rankChangeText");
+      text.textContent = `↑ ${climber.nama} naik ke peringkat ${climber.to}!`;
+      notice.classList.remove("d-none");
+      setTimeout(() => notice.classList.add("d-none"), 3000);
+    }
+
+    listContainer.innerHTML = leaderboard.slice(0, 7).map((item, idx) => {
+      let topClass = "";
+      let badgeClass = "rank-badge-other";
+      if (item.ranking === 1) { topClass = "rank-row-top1"; badgeClass = "rank-badge-1"; }
+      else if (item.ranking === 2) { topClass = "rank-row-top2"; badgeClass = "rank-badge-2"; }
+      else if (item.ranking === 3) { topClass = "rank-row-top3"; badgeClass = "rank-badge-3"; }
+
+      return `
+        <div class="rank-row ${topClass} ${climber && climber.nama === item.nama ? 'rank-up-anim' : ''}">
+          <div class="d-flex align-items-center gap-2">
+            <span class="rank-badge ${badgeClass}">${item.ranking}</span>
+            <div>
+              <span class="fw-bold d-block text-white" style="font-size: 0.95rem;">${item.nama}</span>
+              <small class="text-white-50" style="font-size: 0.72rem;">${item.jumlah_benar} Benar • ${item.rata_rata_waktu}s</small>
+            </div>
+          </div>
+          <span class="fw-bold fs-6 text-warning font-monospace">${item.total_skor.toLocaleString()}</span>
+        </div>
+      `;
+    }).join("");
+  }
+
+  function prevLiveQuestion() {
+    if (liveQuizState.currentIndex > 0) {
+      liveQuizState.currentIndex--;
+      renderCurrentLiveQuestion();
+      updateBackendQuestionIndex();
+    }
+  }
+
+  function nextLiveQuestion() {
+    if (liveQuizState.currentIndex < liveQuizState.soalList.length - 1) {
+      liveQuizState.currentIndex++;
+      renderCurrentLiveQuestion();
+      updateBackendQuestionIndex();
+    } else {
+      showFloatingConfirm({
+        title: "Selesaikan Kuis?",
+        message: "Ini adalah soal terakhir. Sesi kuis akan diakhiri dan podium juara akan ditampilkan.",
+        icon: '<i class="bi bi-trophy-fill text-warning"></i>',
+        type: "success",
+        confirmText: "Ya, Tampilkan Podium",
+        onConfirm: () => {
+          showFinalPodium();
+        }
+      });
+    }
+  }
+
+  function updateBackendQuestionIndex() {
+    if (!liveQuizState.session) return;
+    google.script.run.updateLiveQuestionIndex(AppState.token, liveQuizState.session.quizId, liveQuizState.currentIndex);
+  }
+
+  function confirmExitLiveQuiz() {
+    showFloatingConfirm({
+      title: "Tutup Live Quiz?",
+      message: "Apakah Anda yakin ingin keluar dari mode kuis ini?",
+      icon: '<i class="bi bi-door-open-fill text-danger"></i>',
+      type: "danger",
+      confirmText: "Ya, Keluar",
+      onConfirm: () => {
+        routeByRole("GURU");
+      }
+    });
+  }
+
+  // ================= TAMPILKAN PODIUM JUARA AKHIR =================
+  function showFinalPodium() {
+    clearInterval(liveQuizState.timerInterval);
+    clearInterval(liveQuizState.pollingInterval);
+
+    showLoading(true);
+    google.script.run
+      .withSuccessHandler(res => {
+        showLoading(false);
+        renderPodiumData(liveQuizState.latestLeaderboard);
+      })
+      .finishLiveQuizSession(AppState.token, liveQuizState.session.quizId);
+  }
+
+  function renderPodiumData(leaderboard) {
+    document.getElementById("podiumQuizTitle").textContent = liveQuizState.session ? liveQuizState.session.judul : "";
+    const podiumBox = document.getElementById("podiumBox");
+
+    const p1 = leaderboard[0] || null;
+    const p2 = leaderboard[1] || null;
+    const p3 = leaderboard[2] || null;
+
+    podiumBox.innerHTML = `
+      <!-- Juara 2 -->
+      <div class="podium-step podium-2">
+        <span class="badge bg-light text-dark rounded-pill mb-1">🥈 JUARA 2</span>
+        <h6 class="fw-bold mb-1 text-truncate">${p2 ? p2.nama : '-'}</h6>
+        <span class="fs-5 fw-bold font-monospace">${p2 ? p2.total_skor.toLocaleString() : 0}</span>
+      </div>
+
+      <!-- Juara 1 -->
+      <div class="podium-step podium-1">
+        <span class="badge bg-dark text-warning rounded-pill mb-1">🥇 JUARA 1</span>
+        <h5 class="fw-bold mb-1 text-truncate">${p1 ? p1.nama : '-'}</h5>
+        <span class="fs-4 fw-bold font-monospace text-dark">${p1 ? p1.total_skor.toLocaleString() : 0}</span>
+      </div>
+
+      <!-- Juara 3 -->
+      <div class="podium-step podium-3">
+        <span class="badge bg-light text-dark rounded-pill mb-1">🥉 JUARA 3</span>
+        <h6 class="fw-bold mb-1 text-truncate">${p3 ? p3.nama : '-'}</h6>
+        <span class="fs-5 fw-bold font-monospace">${p3 ? p3.total_skor.toLocaleString() : 0}</span>
+      </div>
+    `;
+
+    // Tabel Lengkap
+    const tbody = document.getElementById("tbodyFullFinalRank");
+    tbody.innerHTML = leaderboard.map(s => `
+      <tr>
+        <td><span class="badge ${s.ranking <= 3 ? 'bg-warning text-dark' : 'bg-secondary'}">${s.ranking}</span></td>
+        <td class="fw-semibold">${s.nama}</td>
+        <td class="text-success">${s.jumlah_benar}</td>
+        <td class="text-danger">${s.jumlah_salah}</td>
+        <td>${s.rata_rata_waktu} dtk</td>
+        <td class="text-end fw-bold text-warning font-monospace">${s.total_skor.toLocaleString()}</td>
+      </tr>
+    `).join("");
+
+    new bootstrap.Modal(document.getElementById("modalFinalPodium")).show();
+
+    // Efek Selebrasi Kemenangan: Fanfare Audio & Confetti V2.0
+    if (typeof SoundFX !== "undefined") {
+      SoundFX.fanfare();
+    }
+    if (typeof confetti === "function") {
+      try {
+        confetti({
+          particleCount: 120,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+        setTimeout(() => {
+          confetti({
+            particleCount: 80,
+            angle: 60,
+            spread: 55,
+            origin: { x: 0 }
+          });
+          confetti({
+            particleCount: 80,
+            angle: 120,
+            spread: 55,
+            origin: { x: 1 }
+          });
+        }, 400);
+      } catch (e) {}
+    }
+  }
+
+  function toggleQuizSound() {
+    if (typeof SoundFX === "undefined") return;
+    SoundFX.muted = !SoundFX.muted;
+    const icon = document.getElementById("iconLiveSound");
+    const btn = document.getElementById("btnLiveSound");
+    if (SoundFX.muted) {
+      icon.className = "bi bi-volume-mute-fill text-muted";
+      btn.className = "btn btn-outline-secondary btn-sm rounded-pill px-3";
+    } else {
+      icon.className = "bi bi-volume-up-fill";
+      btn.className = "btn btn-outline-info btn-sm rounded-pill px-3";
+      SoundFX.scanSuccess(); // Tes bunyi
+    }
+  }
+
+  function closePodiumAndReturn() {
+    bootstrap.Modal.getInstance(document.getElementById("modalFinalPodium")).hide();
+    routeByRole("GURU");
+  }
+
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+  }
+</script>

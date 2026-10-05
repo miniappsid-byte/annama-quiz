@@ -1,0 +1,981 @@
+<!-- Navbar Guru -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom px-3 py-2 shadow-sm sticky-top">
+  <div class="container-fluid">
+    <span class="navbar-brand brand-title text-primary">
+      <i class="bi bi-patch-question-fill me-2"></i>AN-NAMA QUIZ
+    </span>
+    <div class="d-flex align-items-center gap-2">
+      <span class="badge bg-success rounded-pill badge-role">GURU</span>
+      <span class="text-secondary small d-none d-md-inline" id="guruNavbarName">Ustadz</span>
+      <button class="btn btn-outline-secondary btn-sm rounded-pill px-3 ms-2" onclick="logout()">
+        <i class="bi bi-box-arrow-right me-1"></i> Logout
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- Tab Navigasi Guru -->
+<div class="bg-white border-bottom shadow-sm">
+  <div class="container">
+    <ul class="nav nav-pills py-2 gap-2" id="guruTabs">
+      <li class="nav-item">
+        <button class="nav-link active rounded-pill px-3 py-1 small fw-semibold" onclick="switchGuruTab('dashboard')">
+          <i class="bi bi-grid-fill me-1"></i> Dashboard
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link rounded-pill px-3 py-1 small fw-semibold text-secondary" onclick="switchGuruTab('kuis-saya')">
+          <i class="bi bi-journal-check me-1"></i> Kuis Saya
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link rounded-pill px-3 py-1 small fw-semibold text-success border border-success border-opacity-25" onclick="openScannerPage()">
+          <i class="bi bi-camera-fill me-1"></i> Scanner HP Guru
+        </button>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<!-- Konten Utama Guru -->
+<div class="container py-3">
+
+  <!-- ================= VIEW 1: DASHBOARD RINGKASAN ================= -->
+  <div id="view-dashboard" class="guru-view-pane">
+    <div class="card border-0 shadow-sm rounded-4 bg-white p-4 mb-4 border-start border-success border-5">
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div>
+          <h4 class="fw-bold text-dark mb-1" id="guruWelcome">Ahlan wa Sahlan, Ustadz!</h4>
+          <p class="mb-0 text-muted">Platform kuis interaktif kartu QR untuk asesmen kelas.</p>
+        </div>
+        <button class="btn btn-success rounded-pill px-4 fw-semibold shadow-sm" onclick="openModalKuis()">
+          <i class="bi bi-plus-circle me-1"></i> Buat Kuis Baru
+        </button>
+      </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-md-3">
+        <div class="card border-0 shadow-sm rounded-3 p-3 text-center bg-white">
+          <small class="text-muted fw-semibold">Jumlah Kuis</small>
+          <h2 class="fw-bold text-primary my-1" id="statKuisTotal">0</h2>
+          <small class="text-secondary">Paket Kuis</small>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card border-0 shadow-sm rounded-3 p-3 text-center bg-white">
+          <small class="text-muted fw-semibold">Kuis Aktif</small>
+          <h2 class="fw-bold text-success my-1" id="statKuisAktif">0</h2>
+          <small class="text-secondary">Siap / Berjalan</small>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card border-0 shadow-sm rounded-3 p-3 text-center bg-white">
+          <small class="text-muted fw-semibold">Total Peserta</small>
+          <h2 class="fw-bold text-warning my-1">0</h2>
+          <small class="text-secondary">Santri Menjawab</small>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card border-0 shadow-sm rounded-3 p-3 text-center bg-white">
+          <small class="text-muted fw-semibold">Rata-rata Nilai</small>
+          <h2 class="fw-bold text-info my-1">-</h2>
+          <small class="text-secondary">Akumulasi</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kuis Terakhir -->
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h6 class="fw-bold text-dark mb-0"><i class="bi bi-clock-history me-1 text-primary"></i>Kuis Terbaru Anda</h6>
+      <button class="btn btn-link btn-sm text-decoration-none p-0" onclick="switchGuruTab('kuis-saya')">Lihat Semua &rarr;</button>
+    </div>
+    <div class="card border-0 shadow-sm rounded-3">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Judul Kuis</th>
+              <th>Mata Pelajaran</th>
+              <th>Kelas</th>
+              <th>Jumlah Soal</th>
+              <th>Durasi / Soal</th>
+              <th>Aksi Cepat</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyKuisDashboard">
+            <tr><td colspan="6" class="text-center py-4 text-muted">Memuat data kuis...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= VIEW 2: KUIS SAYA ================= -->
+  <div id="view-kuis-saya" class="guru-view-pane d-none">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-journal-check text-primary me-2"></i>Daftar Kuis Saya</h5>
+      <button class="btn btn-primary btn-sm rounded-pill px-3 fw-semibold shadow-sm" onclick="openModalKuis()">
+        <i class="bi bi-plus-lg me-1"></i> Buat Kuis
+      </button>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-3">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>ID Kuis</th>
+              <th>Judul Kuis</th>
+              <th>Mapel</th>
+              <th>Kelas</th>
+              <th>Soal</th>
+              <th>Durasi</th>
+              <th>Status</th>
+              <th>Aksi Live & Kelola</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyKuisSaya">
+            <tr><td colspan="8" class="text-center py-4 text-muted">Memuat kuis...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= VIEW 3: EDITOR BUTIR SOAL ================= -->
+  <div id="view-editor-soal" class="guru-view-pane d-none">
+    <div class="card border-0 shadow-sm rounded-4 p-3 mb-3 bg-white border-start border-primary border-4">
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div>
+          <button class="btn btn-outline-secondary btn-sm rounded-pill mb-2" onclick="switchGuruTab('kuis-saya')">
+            <i class="bi bi-arrow-left me-1"></i> Kembali ke Kuis Saya
+          </button>
+          <h5 class="fw-bold text-dark mb-0" id="editorQuizTitle">Judul Kuis</h5>
+          <small class="text-muted" id="editorQuizMeta">Mapel - Kelas</small>
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-success btn-sm rounded-pill px-3 fw-semibold shadow-sm" onclick="launchLiveQuiz(guruCache.activeQuiz ? guruCache.activeQuiz.quiz_id : '')">
+            <i class="bi bi-play-fill me-1"></i> Mulai Live Quiz
+          </button>
+          <button class="btn btn-primary btn-sm rounded-pill px-3 fw-semibold shadow-sm" onclick="openModalSoal()">
+            <i class="bi bi-plus-circle me-1"></i> Tambah Butir Soal
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="soalListContainer" class="d-flex flex-column gap-3">
+      <div class="text-center py-5 text-muted">
+        <div class="spinner-border spinner-border-sm text-primary me-2"></div> Memuat daftar soal...
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= VIEW 4: ANALISIS HASIL KUIS (V1.9) ================= -->
+  <div id="view-analisis-kuis" class="guru-view-pane d-none">
+    <div class="card border-0 shadow-sm rounded-4 p-3 mb-3 bg-white border-start border-info border-4">
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div>
+          <button class="btn btn-outline-secondary btn-sm rounded-pill mb-2" onclick="switchGuruTab('kuis-saya')">
+            <i class="bi bi-arrow-left me-1"></i> Kembali ke Kuis Saya
+          </button>
+          <h5 class="fw-bold text-dark mb-0" id="analisisQuizTitle">Analisis Hasil Kuis</h5>
+          <small class="text-muted" id="analisisQuizMeta">Laporan Penilaian & Ketuntasan Santri</small>
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-outline-success btn-sm rounded-pill px-3" onclick="exportAnalisisSantriCSV()">
+            <i class="bi bi-file-earmark-spreadsheet me-1"></i> Unduh CSV
+          </button>
+          <button class="btn btn-outline-primary btn-sm rounded-pill px-3" onclick="window.print()">
+            <i class="bi bi-printer me-1"></i> Cetak Laporan
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ringkasan Nilai & Metrik Kuis -->
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-md-3">
+        <div class="card border-0 shadow-sm rounded-3 p-3 text-center bg-white">
+          <small class="text-muted fw-semibold">Total Santri Menjawab</small>
+          <h2 class="fw-bold text-primary my-1" id="anaTotalPeserta">0</h2>
+          <small class="text-secondary">Santri</small>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card border-0 shadow-sm rounded-3 p-3 text-center bg-white">
+          <small class="text-muted fw-semibold">Rata-rata Skor</small>
+          <h2 class="fw-bold text-success my-1" id="anaRataRataSkor">0</h2>
+          <small class="text-secondary">Poin</small>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card border-0 shadow-sm rounded-3 p-3 text-center bg-white">
+          <small class="text-muted fw-semibold">Persentase Ketuntasan</small>
+          <h2 class="fw-bold text-info my-1" id="anaKetuntasan">0%</h2>
+          <small class="text-secondary">KKM &ge; 70%</small>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card border-0 shadow-sm rounded-3 p-3 text-center bg-white">
+          <small class="text-muted fw-semibold">Soal Paling Sulit</small>
+          <h3 class="fw-bold text-danger my-1" id="anaSoalSulit">-</h3>
+          <small class="text-secondary" id="anaSoalSulitPersen">0% Benar</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Analisis Butir Soal (Item Difficulty) -->
+    <div class="card border-0 shadow-sm rounded-3 p-3 bg-white mb-4">
+      <h6 class="fw-bold text-dark mb-3"><i class="bi bi-pie-chart-fill text-primary me-2"></i>Analisis Butir Soal & Tingkat Kesulitan</h6>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>No</th>
+              <th>Pertanyaan</th>
+              <th>Kunci</th>
+              <th>Total Jawab</th>
+              <th>Benar</th>
+              <th>Salah</th>
+              <th>% Benar</th>
+              <th>Tingkat Kesulitan</th>
+              <th>Distribusi Jawaban</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyItemAnalysis"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Rekap Nilai & Peringkat Seluruh Santri -->
+    <div class="card border-0 shadow-sm rounded-3 p-3 bg-white">
+      <h6 class="fw-bold text-dark mb-3"><i class="bi bi-trophy-fill text-warning me-2"></i>Daftar Nilai & Peringkat Santri</h6>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Peringkat</th>
+              <th>NIS</th>
+              <th>Nama Santri</th>
+              <th>Benar</th>
+              <th>Salah</th>
+              <th>% Nilai</th>
+              <th>Rata-rata Waktu</th>
+              <th class="text-end">Total Skor</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyHasilSantri"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ================= MODAL BUAT/EDIT KUIS ================= -->
+<div class="modal fade" id="modalKuis" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content border-0 rounded-4 shadow">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold" id="modalKuisTitle">Buat Kuis Baru</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form onsubmit="saveKuisForm(event)">
+        <div class="modal-body">
+          <input type="hidden" id="kuisId">
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Judul Kuis</label>
+            <input type="text" class="form-control" id="kuisJudul" placeholder="Contoh: Kuis Matematika Bab 2 Aljabar" required>
+          </div>
+          <div class="row g-2 mb-3">
+            <div class="col-md-6">
+              <label class="form-label small fw-semibold">Mata Pelajaran</label>
+              <select class="form-select" id="kuisMapel" required>
+                <option value="">Pilih Mapel</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-semibold">Kelas Target</label>
+              <select class="form-select" id="kuisKelas" required>
+                <option value="">Pilih Kelas</option>
+              </select>
+            </div>
+          </div>
+          <div class="row g-2 mb-3">
+            <div class="col-md-6">
+              <label class="form-label small fw-semibold">Tahun Pelajaran</label>
+              <select class="form-select" id="kuisTahun">
+                <option value="">Pilih Tahun</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-semibold">Durasi per Soal (Detik)</label>
+              <input type="number" class="form-control" id="kuisDurasi" value="30" min="5" max="300" required>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Deskripsi / Petunjuk (Opsional)</label>
+            <textarea class="form-control" id="kuisDeskripsi" rows="2" placeholder="Catatan kuis untuk santri..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-light rounded-pill" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-primary rounded-pill px-4" id="btnSaveKuis">Simpan Kuis</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ================= MODAL TAMBAH/EDIT SOAL ================= -->
+<div class="modal fade" id="modalSoal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content border-0 rounded-4 shadow">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold" id="modalSoalTitle">Tambah Soal</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form onsubmit="saveSoalForm(event)">
+        <div class="modal-body">
+          <input type="hidden" id="soalId">
+          <input type="hidden" id="soalQuizId">
+
+          <div class="row g-2 mb-3">
+            <div class="col-md-3">
+              <label class="form-label small fw-semibold">Nomor Urut Soal</label>
+              <input type="number" class="form-control" id="soalNomor" value="1" min="1" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-semibold text-danger">Kunci Jawaban Benar (A/B/C/D) *</label>
+              <select class="form-select border-danger fw-bold" id="soalJawabanBenar" required>
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+                <option value="D">D</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label small fw-semibold">Poin Dasar</label>
+              <input type="number" class="form-control" id="soalPoin" value="100" min="10" required>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Pertanyaan / Soal</label>
+            <textarea class="form-control" id="soalPertanyaan" rows="3" placeholder="Tuliskan butir soal di sini..." required></textarea>
+          </div>
+
+          <!-- Opsi Pilihan Jawaban A, B, C, D -->
+          <div class="row g-2">
+            <div class="col-md-6 mb-2">
+              <label class="form-label small fw-bold text-danger">Opsi A</label>
+              <input type="text" class="form-control" id="soalOpsiA" placeholder="Jawaban A" required>
+            </div>
+            <div class="col-md-6 mb-2">
+              <label class="form-label small fw-bold text-primary">Opsi B</label>
+              <input type="text" class="form-control" id="soalOpsiB" placeholder="Jawaban B" required>
+            </div>
+            <div class="col-md-6 mb-2">
+              <label class="form-label small fw-bold text-success">Opsi C</label>
+              <input type="text" class="form-control" id="soalOpsiC" placeholder="Jawaban C" required>
+            </div>
+            <div class="col-md-6 mb-2">
+              <label class="form-label small fw-bold text-warning">Opsi D</label>
+              <input type="text" class="form-control" id="soalOpsiD" placeholder="Jawaban D" required>
+            </div>
+          </div>
+
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-light rounded-pill" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-primary rounded-pill px-4" id="btnSaveSoal">Simpan Soal</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  let guruCache = {
+    referensi: { kelas: [], mapel: [], tahun: [] },
+    kuisList: [],
+    activeQuiz: null,
+    soalList: []
+  };
+
+  function initGuruDashboard() {
+    if (AppState.user) {
+      const elNav = document.getElementById("guruNavbarName");
+      const elWelcome = document.getElementById("guruWelcome");
+      if (elNav) elNav.textContent = AppState.user.nama;
+      if (elWelcome) elWelcome.textContent = `Ahlan wa Sahlan, ${AppState.user.nama}!`;
+    }
+    loadGuruInit();
+  }
+
+  function switchGuruTab(viewName) {
+    document.querySelectorAll(".guru-view-pane").forEach(v => v.classList.add("d-none"));
+    const target = document.getElementById(`view-${viewName}`);
+    if (target) target.classList.remove("d-none");
+
+    const buttons = document.querySelectorAll("#guruTabs .nav-link");
+    buttons.forEach(btn => {
+      btn.classList.remove("active");
+      btn.classList.add("text-secondary");
+    });
+
+    if (viewName === "dashboard" && buttons[0]) {
+      buttons[0].classList.add("active");
+      buttons[0].classList.remove("text-secondary");
+      loadGuruInit();
+    } else if (viewName === "kuis-saya" && buttons[1]) {
+      buttons[1].classList.add("active");
+      buttons[1].classList.remove("text-secondary");
+      loadKuisSaya();
+    }
+  }
+
+  function loadGuruInit() {
+    google.script.run
+      .withSuccessHandler(res => {
+        if (!res.success) return showFloatingAlert(res.message, "danger");
+        guruCache.referensi = res.data.referensi;
+        document.getElementById("statKuisTotal").textContent = res.data.stats.totalKuis;
+        document.getElementById("statKuisAktif").textContent = res.data.stats.kuisAktif;
+        populateKuisDropdowns();
+        loadKuisDashboard();
+      })
+      .getGuruInitData(AppState.token);
+  }
+
+  function populateKuisDropdowns() {
+    const mapelSel = document.getElementById("kuisMapel");
+    const kelasSel = document.getElementById("kuisKelas");
+    const tahunSel = document.getElementById("kuisTahun");
+
+    mapelSel.innerHTML = `<option value="">Pilih Mapel</option>` + guruCache.referensi.mapel.map(m => `
+      <option value="${m.mapel_id}">${m.nama_mapel}</option>
+    `).join("");
+
+    kelasSel.innerHTML = `<option value="">Pilih Kelas</option>` + guruCache.referensi.kelas.map(k => `
+      <option value="${k.kelas_id}">${k.nama_kelas}</option>
+    `).join("");
+
+    tahunSel.innerHTML = `<option value="">Pilih Tahun</option>` + guruCache.referensi.tahun.map(t => `
+      <option value="${t.tahun_id}">${t.nama_tahun}</option>
+    `).join("");
+  }
+
+  function loadKuisDashboard() {
+    const tbody = document.getElementById("tbodyKuisDashboard");
+    google.script.run
+      .withSuccessHandler(res => {
+        if (!res.success) return;
+        guruCache.kuisList = res.data || [];
+        if (guruCache.kuisList.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-muted">Belum ada kuis yang dibuat. Klik tombol "+ Buat Kuis Baru" di atas.</td></tr>`;
+          return;
+        }
+        tbody.innerHTML = guruCache.kuisList.slice(0, 5).map(k => `
+          <tr>
+            <td class="fw-semibold text-primary">${k.judul}</td>
+            <td>${k.nama_mapel}</td>
+            <td><span class="badge bg-light text-dark border">${k.nama_kelas}</span></td>
+            <td><span class="badge bg-secondary">${k.jumlah_soal} Soal</span></td>
+            <td>${k.durasi} dtk</td>
+            <td>
+              <div class="d-flex gap-1">
+                <button class="btn btn-sm btn-success rounded-pill px-3 shadow-sm" onclick="launchLiveQuiz('${k.quiz_id}')">
+                  <i class="bi bi-play-fill me-1"></i> Live Quiz
+                </button>
+                <button class="btn btn-sm btn-outline-primary rounded-pill px-3" onclick="openEditorSoal('${k.quiz_id}')">
+                  <i class="bi bi-pencil-square me-1"></i> Soal
+                </button>
+              </div>
+            </td>
+          </tr>
+        `).join("");
+      })
+      .getKuisGuruList(AppState.token);
+  }
+
+  function loadKuisSaya() {
+    const tbody = document.getElementById("tbodyKuisSaya");
+    tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-muted">Memuat data kuis...</td></tr>`;
+    google.script.run
+      .withSuccessHandler(res => {
+        if (!res.success) return showFloatingAlert(res.message, "danger");
+        guruCache.kuisList = res.data || [];
+        if (guruCache.kuisList.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-muted">Anda belum memiliki kuis.</td></tr>`;
+          return;
+        }
+        tbody.innerHTML = guruCache.kuisList.map(k => `
+          <tr>
+            <td><code>${k.quiz_id}</code></td>
+            <td class="fw-semibold">${k.judul}</td>
+            <td>${k.nama_mapel}</td>
+            <td><span class="badge bg-light text-dark border">${k.nama_kelas}</span></td>
+            <td><span class="badge bg-primary rounded-pill">${k.jumlah_soal} Soal</span></td>
+            <td>${k.durasi} dtk</td>
+            <td><span class="badge ${k.status === 'AKTIF' ? 'bg-success' : 'bg-secondary'}">${k.status}</span></td>
+            <td>
+              <div class="d-flex gap-1">
+                <button class="btn btn-sm btn-success rounded-pill px-2 shadow-sm" onclick="launchLiveQuiz('${k.quiz_id}')" title="Mulai Live Quiz di Layar Laptop">
+                  <i class="bi bi-play-fill"></i> Live
+                </button>
+                <button class="btn btn-sm btn-info text-white rounded-pill px-2 shadow-sm" onclick="openAnalisisKuis('${k.quiz_id}')" title="Analisis Hasil Kuis">
+                  <i class="bi bi-bar-chart-line-fill"></i> Analisis
+                </button>
+                <button class="btn btn-sm btn-primary rounded-pill px-2" onclick="openEditorSoal('${k.quiz_id}')" title="Kelola Butir Soal">
+                  <i class="bi bi-list-task"></i> Soal
+                </button>
+                <button class="btn btn-sm btn-outline-secondary rounded-pill px-2" onclick="editKuis('${k.quiz_id}')" title="Edit Pengaturan Kuis">
+                  <i class="bi bi-gear"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger rounded-pill px-2" onclick="deleteKuis('${k.quiz_id}')" title="Hapus Kuis">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `).join("");
+      })
+      .getKuisGuruList(AppState.token);
+  }
+
+  // ================= MODAL KUIS =================
+  function openModalKuis() {
+    document.getElementById("kuisId").value = "";
+    document.getElementById("kuisJudul").value = "";
+    document.getElementById("kuisDeskripsi").value = "";
+    document.getElementById("kuisDurasi").value = "30";
+    document.getElementById("modalKuisTitle").textContent = "Buat Kuis Baru";
+    new bootstrap.Modal(document.getElementById("modalKuis")).show();
+  }
+
+  function editKuis(quizId) {
+    const k = guruCache.kuisList.find(item => item.quiz_id === quizId);
+    if (!k) return;
+    document.getElementById("kuisId").value = k.quiz_id;
+    document.getElementById("kuisJudul").value = k.judul;
+    document.getElementById("kuisMapel").value = k.mapel_id;
+    document.getElementById("kuisKelas").value = k.kelas_id;
+    document.getElementById("kuisTahun").value = k.tahun_id || "";
+    document.getElementById("kuisDurasi").value = k.durasi || 30;
+    document.getElementById("kuisDeskripsi").value = k.deskripsi || "";
+    document.getElementById("modalKuisTitle").textContent = "Edit Kuis";
+    new bootstrap.Modal(document.getElementById("modalKuis")).show();
+  }
+
+  function saveKuisForm(e) {
+    e.preventDefault();
+    const btn = document.getElementById("btnSaveKuis");
+    btn.disabled = true;
+    const payload = {
+      quiz_id: document.getElementById("kuisId").value,
+      judul: document.getElementById("kuisJudul").value,
+      mapel_id: document.getElementById("kuisMapel").value,
+      kelas_id: document.getElementById("kuisKelas").value,
+      tahun_id: document.getElementById("kuisTahun").value,
+      durasi: document.getElementById("kuisDurasi").value,
+      deskripsi: document.getElementById("kuisDeskripsi").value
+    };
+
+    google.script.run
+      .withSuccessHandler(res => {
+        btn.disabled = false;
+        bootstrap.Modal.getInstance(document.getElementById("modalKuis")).hide();
+        showFloatingAlert(res.message, res.success ? "success" : "danger");
+        loadKuisSaya();
+        loadGuruInit();
+      })
+      .withFailureHandler(err => {
+        btn.disabled = false;
+        showFloatingAlert(err.message, "danger");
+      })
+      .saveKuisGuru(AppState.token, payload);
+  }
+
+  function deleteKuis(quizId) {
+    showFloatingConfirm({
+      title: "Hapus Kuis Ini?",
+      message: "Seluruh butir soal di dalam paket kuis ini juga akan ikut terhapus permanen.",
+      icon: '<i class="bi bi-trash3-fill text-danger"></i>',
+      type: "danger",
+      confirmText: "Ya, Hapus Kuis",
+      cancelText: "Batal",
+      onConfirm: () => {
+        showLoading(true);
+        google.script.run
+          .withSuccessHandler(res => {
+            showLoading(false);
+            showFloatingAlert(res.message, res.success ? "success" : "danger");
+            loadKuisSaya();
+            loadGuruInit();
+          })
+          .withFailureHandler(err => {
+            showLoading(false);
+            showFloatingAlert(err.message, "danger");
+          })
+          .deleteKuisGuru(AppState.token, quizId);
+      }
+    });
+  }
+
+  // ================= EDITOR SOAL =================
+  function openEditorSoal(quizId) {
+    document.querySelectorAll(".guru-view-pane").forEach(v => v.classList.add("d-none"));
+    document.getElementById("view-editor-soal").classList.remove("d-none");
+
+    const container = document.getElementById("soalListContainer");
+    container.innerHTML = `<div class="text-center py-5 text-muted"><div class="spinner-border spinner-border-sm text-primary me-2"></div> Memuat daftar soal...</div>`;
+
+    google.script.run
+      .withSuccessHandler(res => {
+        if (!res.success) return showFloatingAlert(res.message, "danger");
+        guruCache.activeQuiz = res.data.kuis;
+        guruCache.soalList = res.data.soal;
+
+        document.getElementById("editorQuizTitle").textContent = res.data.kuis.judul;
+        document.getElementById("editorQuizMeta").textContent = `${res.data.kuis.jumlah_soal} Soal | Durasi: ${res.data.kuis.durasi} detik/soal`;
+
+        renderSoalList();
+      })
+      .getSoalListByQuiz(AppState.token, quizId);
+  }
+
+  function renderSoalList() {
+    const container = document.getElementById("soalListContainer");
+    if (!guruCache.soalList || guruCache.soalList.length === 0) {
+      container.innerHTML = `
+        <div class="card border-0 shadow-sm rounded-4 p-5 text-center bg-white">
+          <i class="bi bi-question-circle text-muted fs-1 mb-2"></i>
+          <h6 class="fw-bold text-muted">Belum ada butir soal di kuis ini.</h6>
+          <p class="text-muted small mb-3">Tambahkan butir soal pilihan ganda (A/B/C/D) sekarang.</p>
+          <div>
+            <button class="btn btn-primary rounded-pill px-4" onclick="openModalSoal()">
+              <i class="bi bi-plus-lg me-1"></i> Tambah Soal Pertama
+            </button>
+          </div>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = guruCache.soalList.map((s, idx) => `
+      <div class="card border-0 shadow-sm rounded-3 p-3 bg-white">
+        <div class="d-flex justify-content-between align-items-center mb-2 border-bottom pb-2">
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-primary rounded-pill">SOAL ${s.nomor}</span>
+            <span class="badge bg-light text-dark border">Poin: ${s.poin}</span>
+          </div>
+          <div class="d-flex gap-1">
+            <button class="btn btn-sm btn-outline-secondary rounded-pill px-2" onclick="duplikatSoal('${s.question_id}')" title="Duplikasi Soal">
+              <i class="bi bi-copy"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-primary rounded-pill px-2" onclick="editSoal('${s.question_id}')" title="Edit Soal">
+              <i class="bi bi-pencil"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-danger rounded-pill px-2" onclick="deleteSoal('${s.question_id}')" title="Hapus Soal">
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+        </div>
+
+        <p class="fw-semibold text-dark mb-3">${s.pertanyaan}</p>
+
+        <div class="row g-2">
+          <div class="col-md-6">
+            <div class="p-2 rounded-2 border ${s.jawaban_benar === 'A' ? 'border-success bg-success bg-opacity-10 fw-bold' : 'bg-light'}">
+              <span class="badge bg-danger me-1">A</span> ${s.opsi_a}
+              ${s.jawaban_benar === 'A' ? '<i class="bi bi-check-circle-fill text-success ms-1"></i>' : ''}
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="p-2 rounded-2 border ${s.jawaban_benar === 'B' ? 'border-success bg-success bg-opacity-10 fw-bold' : 'bg-light'}">
+              <span class="badge bg-primary me-1">B</span> ${s.opsi_b}
+              ${s.jawaban_benar === 'B' ? '<i class="bi bi-check-circle-fill text-success ms-1"></i>' : ''}
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="p-2 rounded-2 border ${s.jawaban_benar === 'C' ? 'border-success bg-success bg-opacity-10 fw-bold' : 'bg-light'}">
+              <span class="badge bg-success me-1">C</span> ${s.opsi_c}
+              ${s.jawaban_benar === 'C' ? '<i class="bi bi-check-circle-fill text-success ms-1"></i>' : ''}
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="p-2 rounded-2 border ${s.jawaban_benar === 'D' ? 'border-success bg-success bg-opacity-10 fw-bold' : 'bg-light'}">
+              <span class="badge bg-warning text-dark me-1">D</span> ${s.opsi_d}
+              ${s.jawaban_benar === 'D' ? '<i class="bi bi-check-circle-fill text-success ms-1"></i>' : ''}
+            </div>
+          </div>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  // ================= MODAL SOAL =================
+  function openModalSoal() {
+    if (!guruCache.activeQuiz) return;
+    document.getElementById("soalId").value = "";
+    document.getElementById("soalQuizId").value = guruCache.activeQuiz.quiz_id;
+    document.getElementById("soalNomor").value = guruCache.soalList.length + 1;
+    document.getElementById("soalPertanyaan").value = "";
+    document.getElementById("soalOpsiA").value = "";
+    document.getElementById("soalOpsiB").value = "";
+    document.getElementById("soalOpsiC").value = "";
+    document.getElementById("soalOpsiD").value = "";
+    document.getElementById("soalJawabanBenar").value = "A";
+    document.getElementById("soalPoin").value = "100";
+    document.getElementById("modalSoalTitle").textContent = "Tambah Soal Baru";
+    new bootstrap.Modal(document.getElementById("modalSoal")).show();
+  }
+
+  function editSoal(questionId) {
+    const s = guruCache.soalList.find(item => item.question_id === questionId);
+    if (!s) return;
+    document.getElementById("soalId").value = s.question_id;
+    document.getElementById("soalQuizId").value = s.quiz_id;
+    document.getElementById("soalNomor").value = s.nomor;
+    document.getElementById("soalPertanyaan").value = s.pertanyaan;
+    document.getElementById("soalOpsiA").value = s.opsi_a;
+    document.getElementById("soalOpsiB").value = s.opsi_b;
+    document.getElementById("soalOpsiC").value = s.opsi_c;
+    document.getElementById("soalOpsiD").value = s.opsi_d;
+    document.getElementById("soalJawabanBenar").value = s.jawaban_benar;
+    document.getElementById("soalPoin").value = s.poin || 100;
+    document.getElementById("modalSoalTitle").textContent = "Edit Butir Soal";
+    new bootstrap.Modal(document.getElementById("modalSoal")).show();
+  }
+
+  function saveSoalForm(e) {
+    e.preventDefault();
+    const btn = document.getElementById("btnSaveSoal");
+    btn.disabled = true;
+    const payload = {
+      question_id: document.getElementById("soalId").value,
+      quiz_id: document.getElementById("soalQuizId").value,
+      nomor: document.getElementById("soalNomor").value,
+      pertanyaan: document.getElementById("soalPertanyaan").value,
+      opsi_a: document.getElementById("soalOpsiA").value,
+      opsi_b: document.getElementById("soalOpsiB").value,
+      opsi_c: document.getElementById("soalOpsiC").value,
+      opsi_d: document.getElementById("soalOpsiD").value,
+      jawaban_benar: document.getElementById("soalJawabanBenar").value,
+      poin: document.getElementById("soalPoin").value
+    };
+
+    google.script.run
+      .withSuccessHandler(res => {
+        btn.disabled = false;
+        bootstrap.Modal.getInstance(document.getElementById("modalSoal")).hide();
+        showFloatingAlert(res.message, res.success ? "success" : "danger");
+        openEditorSoal(guruCache.activeQuiz.quiz_id);
+      })
+      .withFailureHandler(err => {
+        btn.disabled = false;
+        showFloatingAlert(err.message, "danger");
+      })
+      .saveSoalGuru(AppState.token, payload);
+  }
+
+  function deleteSoal(questionId) {
+    showFloatingConfirm({
+      title: "Hapus Butir Soal?",
+      message: "Apakah Anda yakin ingin menghapus butir soal ini?",
+      icon: '<i class="bi bi-trash3-fill text-danger"></i>',
+      type: "danger",
+      confirmText: "Ya, Hapus Soal",
+      cancelText: "Batal",
+      onConfirm: () => {
+        showLoading(true);
+        google.script.run
+          .withSuccessHandler(res => {
+            showLoading(false);
+            showFloatingAlert(res.message, res.success ? "success" : "danger");
+            openEditorSoal(guruCache.activeQuiz.quiz_id);
+          })
+          .withFailureHandler(err => {
+            showLoading(false);
+            showFloatingAlert(err.message, "danger");
+          })
+          .deleteSoalGuru(AppState.token, questionId);
+      }
+    });
+  }
+
+  function duplikatSoal(questionId) {
+    showLoading(true);
+    google.script.run
+      .withSuccessHandler(res => {
+        showLoading(false);
+        showFloatingAlert(res.message, res.success ? "success" : "danger");
+        openEditorSoal(guruCache.activeQuiz.quiz_id);
+      })
+      .withFailureHandler(err => {
+        showLoading(false);
+        showFloatingAlert(err.message, "danger");
+      })
+      .duplikatSoalGuru(AppState.token, questionId);
+  }
+
+  // ================= PELUNCURAN LAPTOP LIVE QUIZ =================
+  function launchLiveQuiz(quizId) {
+    if (!quizId) return;
+    showFloatingConfirm({
+      title: "Mulai Live Quiz?",
+      message: "Layar laptop akan menampilkan soal, timer, dan kode kuis untuk discan guru dari HP.",
+      icon: '<i class="bi bi-display-fill text-primary"></i>',
+      type: "primary",
+      confirmText: "Mulai Sekarang",
+      cancelText: "Nanti Saja",
+      onConfirm: () => {
+        showLoading(true);
+        google.script.run
+          .withSuccessHandler(res => {
+            showLoading(false);
+            if (!res.success) {
+              return showFloatingAlert(res.message, "danger");
+            }
+            // Buka tampilan layar Live Quiz Laptop
+            renderView("liveQuiz");
+            initLiveQuizScreen(res.data.session, res.data.soalList);
+          })
+          .withFailureHandler(err => {
+            showLoading(false);
+            showFloatingAlert(err.message, "danger");
+          })
+          .startLiveQuizSession(AppState.token, quizId);
+      }
+    });
+  }
+
+  // ================= BUKA ANALISIS KUIS GURU (V1.9) =================
+  function openAnalisisKuis(quizId) {
+    if (!quizId) return;
+    showLoading(true);
+
+    google.script.run
+      .withSuccessHandler(res => {
+        showLoading(false);
+        if (!res.success) return showFloatingAlert(res.message, "danger");
+
+        // Tampilkan view analisis
+        document.querySelectorAll(".guru-view-pane").forEach(v => v.classList.add("d-none"));
+        document.getElementById("view-analisis-kuis").classList.remove("d-none");
+
+        document.getElementById("analisisQuizTitle").textContent = res.data.kuis.judul;
+        document.getElementById("analisisQuizMeta").textContent = `ID: ${res.data.kuis.quiz_id} • Status: ${res.data.kuis.status}`;
+
+        // Ringkasan
+        document.getElementById("anaTotalPeserta").textContent = res.data.summary.totalPeserta;
+        document.getElementById("anaRataRataSkor").textContent = res.data.summary.rataRataSkor.toLocaleString();
+        document.getElementById("anaKetuntasan").textContent = `${res.data.summary.persentaseKetuntasan}%`;
+        
+        if (res.data.summary.soalTersulit) {
+          document.getElementById("anaSoalSulit").textContent = `Soal ${res.data.summary.soalTersulit.nomor}`;
+          document.getElementById("anaSoalSulitPersen").textContent = `${res.data.summary.soalTersulit.persentase_benar}% Benar`;
+        } else {
+          document.getElementById("anaSoalSulit").textContent = "-";
+          document.getElementById("anaSoalSulitPersen").textContent = "-";
+        }
+
+        // Tabel Item Analysis
+        const tbodyItem = document.getElementById("tbodyItemAnalysis");
+        if (res.data.itemAnalysis.length === 0) {
+          tbodyItem.innerHTML = `<tr><td colspan="9" class="text-center py-3 text-muted">Belum ada data butir soal.</td></tr>`;
+        } else {
+          tbodyItem.innerHTML = res.data.itemAnalysis.map(item => {
+            let badgeDiff = "bg-secondary";
+            if (item.kategori === "Mudah") badgeDiff = "bg-success";
+            else if (item.kategori === "Sedang") badgeDiff = "bg-warning text-dark";
+            else if (item.kategori === "Sulit") badgeDiff = "bg-danger";
+
+            return `
+              <tr>
+                <td class="fw-bold">${item.nomor}</td>
+                <td style="max-width: 250px;" class="text-truncate" title="${item.pertanyaan}">${item.pertanyaan}</td>
+                <td><span class="badge bg-primary">${item.jawaban_benar}</span></td>
+                <td>${item.total_menjawab}</td>
+                <td class="text-success fw-bold">${item.jumlah_benar}</td>
+                <td class="text-danger fw-bold">${item.jumlah_salah}</td>
+                <td>${item.persentase_benar}%</td>
+                <td><span class="badge ${badgeDiff}">${item.kategori}</span></td>
+                <td>
+                  <small class="font-monospace">
+                    A:${item.distribusi.A} | B:${item.distribusi.B} | C:${item.distribusi.C} | D:${item.distribusi.D}
+                  </small>
+                </td>
+              </tr>
+            `;
+          }).join("");
+        }
+
+        // Tabel Nilai Santri
+        const tbodySantri = document.getElementById("tbodyHasilSantri");
+        if (res.data.hasilSantri.length === 0) {
+          tbodySantri.innerHTML = `<tr><td colspan="8" class="text-center py-3 text-muted">Belum ada santri yang menyelesaikan kuis ini.</td></tr>`;
+        } else {
+          tbodySantri.innerHTML = res.data.hasilSantri.map(s => `
+            <tr>
+              <td><span class="badge ${s.ranking <= 3 ? 'bg-warning text-dark fw-bold' : 'bg-light text-dark border'}">${s.ranking}</span></td>
+              <td><code>${s.nis}</code></td>
+              <td class="fw-semibold">${s.nama}</td>
+              <td class="text-success fw-bold">${s.jumlah_benar}</td>
+              <td class="text-danger fw-bold">${s.jumlah_salah}</td>
+              <td><span class="badge ${s.persentase_nilai >= 70 ? 'bg-success' : 'bg-danger'}">${s.persentase_nilai}%</span></td>
+              <td>${s.rata_rata_waktu}s</td>
+              <td class="text-end fw-bold text-primary font-monospace">${s.total_skor.toLocaleString()}</td>
+            </tr>
+          `).join("");
+        }
+        guruCache.latestAnalisis = res.data;
+      })
+      .withFailureHandler(err => {
+        showLoading(false);
+        showFloatingAlert(err.message, "danger");
+      })
+      .getQuizAnalysisGuru(AppState.token, quizId);
+  }
+
+  // ================= EKSPOR HASIL ANALISIS SANTRI KE CSV =================
+  function exportAnalisisSantriCSV() {
+    if (!guruCache.latestAnalisis || !guruCache.latestAnalisis.hasilSantri || guruCache.latestAnalisis.hasilSantri.length === 0) {
+      return showFloatingAlert("Belum ada data nilai santri untuk diekspor.", "warning");
+    }
+
+    const kuis = guruCache.latestAnalisis.kuis || {};
+    const santriList = guruCache.latestAnalisis.hasilSantri;
+
+    let csvContent = "\uFEFF"; // UTF-8 BOM
+    csvContent += `LAPORAN HASIL KUIS - ${kuis.judul || 'AN-NAMA QUIZ'}\n`;
+    csvContent += `Peringkat,NIS,Nama Santri,Benar,Salah,Persentase Nilai (%),Rata-rata Waktu (dtk),Total Skor\n`;
+
+    santriList.forEach(s => {
+      const namaEscaped = `"${(s.nama || '').replace(/"/g, '""')}"`;
+      csvContent += `${s.ranking},${s.nis || '-'},${namaEscaped},${s.jumlah_benar},${s.jumlah_salah},${s.persentase_nilai}%,${s.rata_rata_waktu},${s.total_skor}\n`;
+    });
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `Hasil_Kuis_${(kuis.judul || 'Annama').replace(/\s+/g, '_')}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    showFloatingAlert("File CSV hasil kuis berhasil diunduh!", "success");
+  }
+
+  // ================= BUKA SCANNER HP GURU =================
+  function openScannerPage(quizCode = "") {
+    renderView("scanner");
+    if (typeof initScannerView === "function") {
+      initScannerView(quizCode);
+    }
+  }
+</script>
